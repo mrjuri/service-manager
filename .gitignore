@@ -31,6 +31,7 @@ Homestead.json
 /storage/*.key
 /vendor
 .env
+.env.example
 .env.backup
 .phpunit.result.cache
 Homestead.json
