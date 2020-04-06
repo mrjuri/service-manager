@@ -1,34 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ asset('node_modules/bootstrap/dist/css/bootstrap.min.css') }}" crossorigin="anonymous" />
-    <link rel="stylesheet" href="{{ asset('node_modules/@fortawesome/fontawesome-free/css/all.min.css') }}" crossorigin="anonymous" />
-
-    <!-- CKEditor -->
-    <script src="{{ asset('node_modules/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}" crossorigin="anonymous"></script>
-
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }} - {{ ucfirst(__('breadcrumb.' . request()->segment(1))) }}</title>
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-    {{--<script src="{{ asset('js/app.js') }}" defer></script>--}}
+    <script src="{{ asset('js/app.js') }}" defer></script>
 
     <!-- Fonts -->
-    {{--<link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">--}}
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
     <!-- Styles -->
-    {{--<link href="{{ asset('css/app.css') }}" rel="stylesheet">--}}
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
@@ -40,21 +33,6 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-
-                        @if(Auth::check())
-                            <li class="nav-item {{ Request::is('/') ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ route('home') }}">Dashboard</a>
-                            </li>
-                            <li class="nav-item {{ Request::is('service*') ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ route('service.list') }}">Servizi</a>
-                            </li>
-                            <li class="nav-item {{ Request::is('customer*') ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ route('customer.list') }}">Clienti</a>
-                            </li>
-                            <li class="nav-item {{ Request::is('setting*') ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ route('setting.create') }}">Impostazioni</a>
-                            </li>
-                        @endif
 
                     </ul>
 
@@ -94,19 +72,9 @@
             </div>
         </nav>
 
-        <main class="py-4" style="margin-top: 60px;">
-            <div class="container">
-                @yield('breadcrumb')
-                @yield('content')
-            </div>
+        <main class="py-4">
+            @yield('content')
         </main>
     </div>
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="{{ asset('node_modules/jquery/dist/jquery.min.js') }}" crossorigin="anonymous"></script>
-    <script src="{{ asset('node_modules/popper.js/dist/popper.min.js') }}" crossorigin="anonymous"></script>
-    <script src="{{ asset('node_modules/bootstrap/dist/js/bootstrap.min.js') }}" crossorigin="anonymous"></script>
-
 </body>
 </html>
