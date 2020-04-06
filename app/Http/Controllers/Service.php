@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Input;
+//use Illuminate\Support\Facades\Input;
 
 class Service extends Controller
 {
@@ -25,7 +25,8 @@ class Service extends Controller
      */
     public function index(Request $request)
     {
-        $s = Input::get('s');
+//        $s = Input::get('s');
+        $s = $request->input('s');
 
         if ($s == '') {
             $request->session()->forget('ss');

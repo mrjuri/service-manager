@@ -3,13 +3,14 @@
 namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Input;
+//use Illuminate\Support\Facades\Input;
 
 class CustomersServicesDetails extends Model
 {
     public function service()
     {
-        $s = Input::get('s');
+//        $s = Input::get('s');
+        $s = '';
         $s_array = explode(' ', $s);
 
         if (isset($s) && 1 == 2) {

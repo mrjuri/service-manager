@@ -7,7 +7,7 @@ use App\Model\CustomersServices;
 use App\Model\CustomersServicesDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Input;
+//use Illuminate\Support\Facades\Input;
 
 class Customer extends Controller
 {
@@ -28,8 +28,10 @@ class Customer extends Controller
      */
     public function index(Request $request)
     {
-        $s = Input::get('s');
-        $srv_not = Input::get('srv_not');
+//        $s = Input::get('s');
+        $s = $request->input('s');
+//        $srv_not = Input::get('srv_not');
+        $srv_not = $request->input('srv_not');
 
         if ($s == '') {
             $request->session()->forget('sc');

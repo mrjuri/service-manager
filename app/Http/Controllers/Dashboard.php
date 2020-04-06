@@ -7,7 +7,7 @@ use App\Model\CustomersServicesDetails;
 use function foo\func;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Input;
+//use Illuminate\Support\Facades\Input;
 
 class Dashboard extends Controller
 {
@@ -21,9 +21,10 @@ class Dashboard extends Controller
         $this->middleware('auth');
     }
 
-    public function view()
+    public function view(Request $request)
     {
-        $s = Input::get('s');
+//        $s = Input::get('s');
+        $s = $request->input('s');
         $s_array = explode(' ', $s);
 
         $servicesList = DB::table('services')
