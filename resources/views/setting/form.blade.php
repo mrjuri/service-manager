@@ -82,18 +82,35 @@
                             @endif />
                 </div>
 
+                <small class="dynamic_field">[Ragione sociale]</small>
+
                 <textarea name="email_body" id="editor"></textarea>
 
                 <script>
                     ClassicEditor
                         .create( document.querySelector( '#editor' ) )
+                        .then( editor => { window.editor = editor; } )
                         .catch( error => {
                         console.error( error );
                     } );
                 </script>
 
-                <br>
-                <small>campo_1</small>
+                <script>
+
+                    $(window).ready(function () {
+
+                        $('.dynamic_field').on('click', function () {
+
+                            window.editor.model.change( writer => {
+                                const insertPosition = editor.model.document.selection.getFirstPosition();
+                                writer.insertText( $(this).html(), insertPosition );
+                            } );
+
+                        });
+
+                    });
+
+                </script>
 
             </div>
         </div>

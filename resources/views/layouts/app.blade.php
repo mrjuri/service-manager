@@ -11,6 +11,9 @@
     <!-- CKEditor -->
     <script src="{{ asset('node_modules/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}" crossorigin="anonymous"></script>
 
+    <!-- jQuery -->
+    <script src="{{ asset('node_modules/jquery/dist/jquery.min.js') }}" crossorigin="anonymous"></script>
+
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -104,7 +107,6 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="{{ asset('node_modules/jquery/dist/jquery.min.js') }}" crossorigin="anonymous"></script>
     <script src="{{ asset('node_modules/popper.js/dist/popper.min.js') }}" crossorigin="anonymous"></script>
     <script src="{{ asset('node_modules/bootstrap/dist/js/bootstrap.min.js') }}" crossorigin="anonymous"></script>
 
