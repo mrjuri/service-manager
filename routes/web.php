@@ -23,7 +23,10 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 */
 
-Auth::routes();
+Auth::routes([
+    'register' => false,
+    'reset' => false,
+]);
 
 Route::get('/', 'Dashboard@view')->name('home');
 
