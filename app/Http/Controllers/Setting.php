@@ -63,8 +63,6 @@ class Setting extends Controller
      */
     public function store(Request $request)
     {
-//    	$now = Carbon::now();
-
         foreach ($request->all() as $k => $v) {
 
             if ($k != '_token') {
@@ -82,52 +80,15 @@ class Setting extends Controller
 
                 } else {
 
-//                    \App\Model\Setting::insert($data_array);
                     $setting_ins = new \App\Model\Setting();
                     $setting_ins->name = $k;
                     $setting_ins->value = $v;
                     $setting_ins->save();
                 }
 
-                /*$data_array[] = array(
-                    'name' => $k,
-                    'value' => $v,
-                    'created_at' => $now,
-                    'updated_at' => $now
-                );*/
-
             }
 
         }
-
-    	/*
-    	$setting = \App\Model\Setting::where('name', 'email_name_sender')
-	        ->get();
-
-    	if (count($setting) > 0) {
-
-    	    dd($request->all());
-
-	    } else {
-
-		    foreach ($request->all() as $k => $v) {
-
-			    if ($k != '_token') {
-
-				    $data_array[] = array(
-					    'name' => $k,
-					    'value' => $v,
-					    'created_at' => $now,
-					    'updated_at' => $now
-				    );
-
-			    }
-
-		    }
-
-		    \App\Model\Setting::insert($data_array);
-	    }
-    	*/
 
 	    return redirect()->route('setting.create');
     }
