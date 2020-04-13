@@ -3,6 +3,11 @@
 
 @section('content')
 
+    <style>
+        .dynamic_field {
+            margin-bottom: 5px;
+        }
+    </style>
     {{--<a href="javascript: history.go(-1);" class="btn btn-primary">Indietro</a>
 
     <br /><br />--}}
@@ -82,9 +87,37 @@
                             @endif />
                 </div>
 
-                <small class="dynamic_field">[Ragione sociale]</small>
+                <div class="row">
+                    <div class="col-lg-3">
 
-                <textarea name="email_body" id="editor"></textarea>
+                        <div class="card" style="margin-bottom: 15px;">
+                            <div class="card-header">
+                                Campi dinamici
+                            </div>
+                            <div class="card-body">
+
+                                <button class="btn btn-outline-primary btn-sm dynamic_field" data-dyn="[customers-company]">Ragione sociale</button>
+                                <button class="btn btn-outline-primary btn-sm dynamic_field" data-dyn="[customers-name]">Nome cliente</button>
+
+                                <button class="btn btn-outline-primary btn-sm dynamic_field" data-dyn="[customers_services-name]">Servizio cliente nome</button>
+                                <button class="btn btn-outline-primary btn-sm dynamic_field" data-dyn="[customers_services-reference]">Servizio cliente rif.</button>
+                                <button class="btn btn-outline-primary btn-sm dynamic_field" data-dyn="[customers_services-expiration]">Servizio cliente exp.</button>
+                                <button class="btn btn-outline-primary btn-sm dynamic_field" data-dyn="[customers_services-list_]">Servizio cliente lista</button>
+                                <button class="btn btn-outline-primary btn-sm dynamic_field" data-dyn="[customers_services-total_]">Servizio cliente tot.</button>
+
+                                <button class="btn btn-outline-primary btn-sm dynamic_field" data-dyn="[service-name]">Servizio nome</button>
+                                <button class="btn btn-outline-primary btn-sm dynamic_field" data-dyn="[service-price_sell]">Servizio prezzo</button>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-lg-9">
+
+                        <textarea name="email_body" id="editor"></textarea>
+
+                    </div>
+                </div>
 
                 <script>
                     ClassicEditor
@@ -97,16 +130,14 @@
 
                 <script>
 
-                    $(window).ready(function () {
+                    $('.dynamic_field').on('click', function () {
 
-                        $('.dynamic_field').on('click', function () {
+                        window.editor.model.change( writer => {
+                            const insertPosition = editor.model.document.selection.getFirstPosition();
+                            writer.insertText( $(this).attr('data-dyn'), insertPosition );
+                        } );
 
-                            window.editor.model.change( writer => {
-                                const insertPosition = editor.model.document.selection.getFirstPosition();
-                                writer.insertText( $(this).html(), insertPosition );
-                            } );
-
-                        });
+                        return false;
 
                     });
 
