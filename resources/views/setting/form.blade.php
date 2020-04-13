@@ -123,7 +123,7 @@
                     <div class="col-lg-9">
 
                         <textarea name="email_body" id="editor">@if (isset($settings->email_body))
-                                value="{{ $settings->email_body }}"
+                                {{ $settings->email_body }}
                             @endif</textarea>
 
                     </div>
