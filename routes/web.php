@@ -48,7 +48,5 @@ Route::get('/customer/renew/{id}', 'Customer@renew')->name('customer.renew');
 Route::get('/setting', 'Setting@create')->name('setting.create');
 Route::post('/setting/store', 'Setting@store')->name('setting.store');
 
-Route::get('/list', 'Domain@get_list');
-Route::get('/mail/service-expiration', function (){
-    return view('mail.service-expiration');
-});
+//Route::get('/list', 'Domain@get_list');
+Route::get('/mail/service-expiration/{customer_id}/{customer_service_id}', 'Email@index');
