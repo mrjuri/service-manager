@@ -112,6 +112,7 @@ class Service extends Controller
     {
         $service = new \App\Model\Service();
         $service->name = $request->input('name');
+        $service->name_customer_view = $request->input('name_customer_view');
         $service->price_buy = floatval(str_replace(',', '.', $request->input('price_buy')));
         $service->price_sell = floatval(str_replace(',', '.', $request->input('price_sell')));
         $service->is_share = $request->input('is_share');
@@ -281,6 +282,7 @@ class Service extends Controller
     {
         $service = \App\Model\Service::find($id);
         $service->name = $request->input('name');
+        $service->name_customer_view = $request->input('name_customer_view');
         $service->price_buy = floatval(str_replace(',', '.', $request->input('price_buy')));
         $service->price_sell = floatval(str_replace(',', '.', $request->input('price_sell')));
         $service->is_share = $request->input('is_share');
