@@ -101,56 +101,101 @@
 
         @csrf
 
-        <div class="row">
-            <div class="col-lg-5">
+        <div class="card bg-secondary text-white">
+            <div class="card-header">
 
-                <div class="form-group">
-                    <input type="text"
-                           class="form-control"
-                           aria-describedby="company"
-                           placeholder="Ragione sociale"
-                           name="company"
-                           @if (isset($customer->company))
-                           value="{{ $customer->company }}"
+                <div class="row">
+                    <div class="col-lg-5">
+
+                        <input type="text"
+                               class="form-control"
+                               aria-describedby="company"
+                               placeholder="Ragione sociale cliente"
+                               name="company"
+                               @if (isset($customer->company))
+                               value="{{ $customer->company }}"
                             @endif />
-                </div>
 
-            </div>
-            <div class="col-lg-3">
+                    </div>
+                    <div class="col-lg-4">
 
-                <div class="form-group">
-                    <input type="text"
-                           class="form-control"
-                           aria-describedby="nome"
-                           placeholder="Nome cliente"
-                           name="name"
-                           @if (isset($customer->name))
-                           value="{{ $customer->name }}"
+                        <input type="email"
+                               class="form-control"
+                               aria-describedby="email"
+                               placeholder="Email cliente"
+                               name="email"
+                               @if (isset($customer->email))
+                               value="{{ $customer->email }}"
                             @endif />
-                </div>
 
-            </div>
-            <div class="col-lg-4">
+                    </div>
+                    <div class="col-lg-3">
 
-                <div class="form-group">
-                    <input type="email"
-                           class="form-control"
-                           aria-describedby="email"
-                           placeholder="Email cliente"
-                           name="email"
-                           @if (isset($customer->email))
-                           value="{{ $customer->email }}"
+                        <input type="text"
+                               class="form-control"
+                               aria-describedby="nome"
+                               placeholder="Nome cliente"
+                               name="name"
+                               @if (isset($customer->name))
+                               value="{{ $customer->name }}"
                             @endif />
+
+                    </div>
                 </div>
 
             </div>
         </div>
+
+        <br>
 
         @foreach($customersServices as $k => $customerService)
 
             <div class="service">
 
                 <div class="card">
+
+                    <div class="card-header">
+
+                        <div class="row">
+                            <div class="col-lg-5">
+
+                                <input type="text"
+                                       class="form-control"
+                                       aria-describedby="service_name"
+                                       placeholder="Azienda di riferimento"
+                                       name="service_company[]"
+                                       @if (isset($customerService->company))
+                                       value="{{ $customerService->company }}"
+                                    @endif />
+
+                            </div>
+                            <div class="col-lg-4">
+
+                                <input type="text"
+                                       class="form-control"
+                                       aria-describedby="service_name"
+                                       placeholder="Email di avviso"
+                                       name="service_email[]"
+                                       @if (isset($customerService->email))
+                                       value="{{ $customerService->email }}"
+                                    @endif />
+
+                            </div>
+                            <div class="col-lg-3">
+
+                                <input type="text"
+                                       class="form-control"
+                                       aria-describedby="service_name"
+                                       placeholder="Nome di avviso"
+                                       name="service_customer_name[]"
+                                       @if (isset($customerService->customer_name))
+                                       value="{{ $customerService->customer_name }}"
+                                    @endif />
+
+                            </div>
+                        </div>
+
+                    </div>
 
                     <div class="card-body">
 
