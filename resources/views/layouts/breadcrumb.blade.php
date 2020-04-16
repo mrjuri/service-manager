@@ -9,7 +9,12 @@
 
                         @if(is_numeric($segment))
                             @php($controllerName = Request::segment(1))
-                            {{ ucfirst(__('breadcrumb.name', ['name' => $$controllerName->name])) }}
+
+                            @if($controllerName == 'customer')
+                                {{ ucfirst(__('breadcrumb.name', ['name' => $$controllerName->company])) }}
+                            @else
+                                {{ ucfirst(__('breadcrumb.name', ['name' => $$controllerName->name])) }}
+                            @endif
                         @else
                             {{ ucfirst(__('breadcrumb.' . $segment)) }}
                         @endif
