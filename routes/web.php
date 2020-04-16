@@ -49,4 +49,5 @@ Route::get('/setting', 'Setting@create')->name('setting.create');
 Route::post('/setting/store', 'Setting@store')->name('setting.store');
 
 //Route::get('/list', 'Domain@get_list');
-Route::get('/mail/service-expiration/{customer_id}/{customer_service_id}', 'Email@index');
+Route::get('/mail/service-expiration/{customer_id}/{customer_service_id}', 'Email@index')
+    ->name('email.exp');

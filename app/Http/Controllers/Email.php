@@ -33,6 +33,7 @@ class Email extends Controller
 
         $customers_services_details = CustomersServicesDetails::where('customer_id', $customer_id)
             ->where('customer_service_id', $customer_service_id)
+            ->orderBy('price_sell', 'DESC')
             ->get();
 
         $price_sell_tot = 0;
@@ -40,7 +41,7 @@ class Email extends Controller
 
         $customers_services_list_ .= '<tr>';
 
-        $customers_services_list_ .= '<th>rif.</th>';
+        $customers_services_list_ .= '<th>Servizio</th>';
         $customers_services_list_ .= '<th class="text-right">Importo</th>';
 
         $customers_services_list_ .= '</tr>';

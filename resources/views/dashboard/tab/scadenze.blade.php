@@ -46,9 +46,11 @@
                             data-href="{{ route('customer.renew', $customersService->id) }}">
                         <i class="fas fa-sync-alt"></i>
                     </button>
-                    <button class="btn btn-dark">
+                    <a class="btn btn-dark"
+                       target="_blank"
+                       href="{{ route('email.exp', [$customersService->customer->id, $customersService->id]) }}">
                         <i class="fas fa-at"></i>
-                    </button>
+                    </a>
                 @endif
             </td>
             <td class="btn-row" data-toggle="collapse" data-target="#details-{{ $customersService->id }}">
