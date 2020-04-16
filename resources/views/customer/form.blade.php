@@ -161,7 +161,7 @@
 
                                 <input type="text"
                                        class="form-control"
-                                       aria-describedby="service_name"
+                                       aria-describedby="service_company"
                                        placeholder="Azienda di riferimento"
                                        name="service_company[]"
                                        @if (isset($customerService->company))
@@ -173,7 +173,7 @@
 
                                 <input type="text"
                                        class="form-control"
-                                       aria-describedby="service_name"
+                                       aria-describedby="service_email"
                                        placeholder="Email di avviso"
                                        name="service_email[]"
                                        @if (isset($customerService->email))
@@ -185,7 +185,7 @@
 
                                 <input type="text"
                                        class="form-control"
-                                       aria-describedby="service_name"
+                                       aria-describedby="service_customer_name"
                                        placeholder="Nome di avviso"
                                        name="service_customer_name[]"
                                        @if (isset($customerService->customer_name))

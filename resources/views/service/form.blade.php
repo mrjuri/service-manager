@@ -68,6 +68,17 @@
             </div>
         </div>
 
+        <div class="form-group">
+            <input type="text"
+                   class="form-control"
+                   aria-describedby="name_customer_view"
+                   placeholder="Nome servizio visualizzato dal cliente"
+                   name="name_customer_view"
+                   @if (isset($service->name_customer_view))
+                   value="{{ $service->name_customer_view }}"
+                @endif />
+        </div>
+
         <div class="form-group form-check">
             <input type="checkbox"
                    class="form-check-input"
