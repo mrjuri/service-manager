@@ -57,7 +57,7 @@
                 {{ $customersService->customer->company }}
                 <br />
                 <small>
-                    {{ $customersService->customer->name }}
+                    {{ $customersService->company }} - {{ $customersService->customer_name }}
                 </small>
             </td>
             <td class="align-middle btn-row" data-toggle="collapse" data-target="#details-{{ $customersService->id }}">
