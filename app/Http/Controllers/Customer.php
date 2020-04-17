@@ -264,12 +264,27 @@ class Customer extends Controller
 
             $expiration = $request->input('service_expiration');
             $reference = $request->input('service_reference');
+            $company = $request->input('service_company');
+            $email = $request->input('service_email');
+            $customer_name = $request->input('service_customer_name');
 
             $customerService->customer_id = $customer_id;
             $customerService->name = $service_name;
 
             if (isset($reference[$k])) {
                 $customerService->reference = $reference[$k];
+            }
+
+            if (isset($company[$k])) {
+                $customerService->company = $company[$k];
+            }
+
+            if (isset($company[$k])) {
+                $customerService->email = $email[$k];
+            }
+
+            if (isset($company[$k])) {
+                $customerService->customer_name = $customer_name[$k];
             }
 
             if (isset($expiration[$k])) {

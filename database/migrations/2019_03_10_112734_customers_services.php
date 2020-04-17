@@ -17,6 +17,9 @@ class CustomersServices extends Migration
             $table->bigIncrements('id');
 
             $table->integer('customer_id');
+            $table->string('company');
+            $table->string('email');
+            $table->string('customer_name');
             $table->string('name');
             $table->string('reference')->nullable();
             $table->timestamp('expiration');
