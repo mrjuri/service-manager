@@ -152,9 +152,9 @@
 
             <div class="service">
 
-                <div class="card">
+                <div class="card border-warning">
 
-                    <div class="card-header">
+                    <div class="card-header bg-warning">
 
                         <div class="row">
                             <div class="col-lg-5">
@@ -311,7 +311,7 @@
                                     <div class="col-lg-1">
 
                                         @if ($k_detail < count($customerService->details) - 1)
-                                            <button class="btn btn-primary btn-block btn-service-details-del">
+                                            <button class="btn btn-secondary btn-block btn-service-details-del">
                                                 <i class="fas fa-minus"></i>
                                             </button>
                                         @else
