@@ -57,7 +57,17 @@
                 {{ $customersService->customer->company }}
                 <br />
                 <small>
-                    {{ $customersService->company }} - {{ $customersService->customer_name }}
+                    @if($customersService->company)
+                    {{ $customersService->company }}
+                    @else
+                    {{ $customersService->customer->company }}
+                    @endif
+                    -
+                    @if($customersService->customer_name)
+                    {{ $customersService->customer_name }}
+                    @else
+                    {{ $customersService->customer->name }}
+                    @endif
                 </small>
             </td>
             <td class="align-middle btn-row" data-toggle="collapse" data-target="#details-{{ $customersService->id }}">

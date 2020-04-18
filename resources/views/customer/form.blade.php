@@ -162,7 +162,11 @@
                                 <input type="text"
                                        class="form-control"
                                        aria-describedby="service_company"
+                                       @if (isset($customer->company))
+                                       placeholder="{{ $customer->company }}"
+                                       @else
                                        placeholder="Azienda di riferimento"
+                                       @endif
                                        name="service_company[]"
                                        @if (isset($customerService->company))
                                        value="{{ $customerService->company }}"
@@ -174,7 +178,11 @@
                                 <input type="text"
                                        class="form-control"
                                        aria-describedby="service_email"
+                                       @if (isset($customer->email))
+                                       placeholder="{{ $customer->email }}"
+                                       @else
                                        placeholder="Email di avviso"
+                                       @endif
                                        name="service_email[]"
                                        @if (isset($customerService->email))
                                        value="{{ $customerService->email }}"
@@ -186,7 +194,11 @@
                                 <input type="text"
                                        class="form-control"
                                        aria-describedby="service_customer_name"
+                                       @if (isset($customer->name))
+                                       placeholder="{{ $customer->name }}"
+                                       @else
                                        placeholder="Nome di avviso"
+                                       @endif
                                        name="service_customer_name[]"
                                        @if (isset($customerService->customer_name))
                                        value="{{ $customerService->customer_name }}"
