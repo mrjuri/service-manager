@@ -53,6 +53,7 @@
                 var $serviceDetailHTML = '<div class="service-details">' + $ObjContainer.html() + "</div>";
 
                 $Obj.removeClass('btn-service-details-new').addClass('btn-service-details-del');
+                $Obj.removeClass('btn-primary').addClass('btn-secondary');
                 $Obj.html('<i class="fas fa-minus"></i>');
 
                 $ObjContainer.parent().find('.service-details').last().after($serviceDetailHTML);
