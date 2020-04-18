@@ -84,7 +84,15 @@
                 </td>
                 <td class="text-right text-danger">
 
+                    @if($customer->price_buy > 0)
+
                     &euro; {{ number_format($customer->price_buy, 2, ',', '.') }}
+
+                    @else
+
+                        🤑🤑🤑
+
+                    @endif
 
                 </td>
                 <td class="text-right {{ $customer->price_utile < 0 ? 'text-danger' : '' }}">
