@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\Expiration;
 use App\Model\CustomersServices;
 use App\Model\CustomersServicesDetails;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class Email extends Controller
 {
@@ -22,9 +24,15 @@ class Email extends Controller
         ]);
     }
 
-    public function send()
+    public function sendExpiration()
     {
+        $customer_id = 30;
+        $customer_service_id = 421;
 
+        $template = $this->template($customer_id, $customer_service_id);
+
+        Mail::to('juri.paiusco@gmail.com')
+            ->send(new Expiration($template));
     }
 
     /**
