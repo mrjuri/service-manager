@@ -7,6 +7,7 @@ use App\Model\CustomersServices;
 use App\Model\CustomersServicesDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class Email extends Controller
 {
@@ -17,11 +18,19 @@ class Email extends Controller
      */
     public function index($customer_id, $customer_service_id)
     {
-        $template = $this->template($customer_id, $customer_service_id);
+        $html = Storage::disk('public')->get('mail_template/expiration.html');
+        $content = $this->template($html, $customer_id, $customer_service_id);
+
+        return view('mail.expiration', [
+            'content' => $content
+        ]);
+
+        /*$settings = \App\Model\Setting::where('name', 'email_body')->get();
+        $template = $this->template($settings[0]->value, $customer_id, $customer_service_id);
 
         return view('mail.service-expiration', [
             'content' => $template
-        ]);
+        ]);*/
     }
 
     public function sendExpiration()
@@ -29,10 +38,16 @@ class Email extends Controller
         $customer_id = 30;
         $customer_service_id = 421;
 
-        $template = $this->template($customer_id, $customer_service_id);
+        $html = Storage::disk('public')->get('mail_template/expiration.html');
+        $content = $this->template($html, $customer_id, $customer_service_id);
 
         Mail::to('juri.paiusco@gmail.com')
-            ->send(new Expiration($template));
+            ->send(new Expiration($content));
+
+        /*$template = $this->template($customer_id, $customer_service_id);
+
+        Mail::to('juri.paiusco@gmail.com')
+            ->send(new Expiration($template));*/
     }
 
     /**
@@ -109,29 +124,53 @@ class Email extends Controller
      *
      * @return string|string[]
      */
-    public function template($customer_id, $customer_service_id)
+    public function template($html, $customer_id, $customer_service_id)
     {
-        $settings = \App\Model\Setting::where('name', 'email_body')
-                                      ->get();
-        $template = $settings[0]->value;
-
         $customers = \App\Model\Customer::where('id', $customer_id)
                                         ->get();
         $customer = $customers[0];
-        $template = str_replace('[customers-name]', $customer->name, $template);
+        $html = str_replace('[customers-name]', $customer->name, $html);
 
         $customers_services = CustomersServices::where('id', $customer_service_id)
                                                ->get();
         $customers_service = $customers_services[0];
-        $template = str_replace('[customers_services-name]', $customers_service->name, $template);
-        $template = str_replace('[customers_services-reference]', $customers_service->reference, $template);
-        $template = str_replace(
+        $html = str_replace('[customers_services-name]', $customers_service->name, $html);
+        $html = str_replace('[customers_services-reference]', $customers_service->reference, $html);
+        $html = str_replace(
             '[customers_services-expiration]',
-            '<div class="date-exp-container">
+            date('d/m/Y', strtotime($customers_service->expiration)),
+            $html
+        );
+
+        $style_date_banner = '
+            <style>
+            .date-exp-container {
+                border: 4px dashed #f00;
+                padding: 30px 0 15px 0;
+                text-align: center;
+                border-radius: 8px;
+                margin: 30px 0 0 0;
+            }
+            .date-exp {
+                font-size: 3em;
+                font-weight: bold;
+                white-space: nowrap;
+                margin-bottom: 10px;
+            }
+            .date-exp-msg {
+                font-size: .75em;
+                white-space: nowrap;
+            }
+            </style>
+        ';
+
+        $html = str_replace(
+            '[customers_services-expiration-banner]',
+            $style_date_banner . '<div class="date-exp-container">
                         <div class="date-exp">'. date('d-m-Y', strtotime($customers_service->expiration)) . '</div>
-                        <div class="date-exp-msg">(dopo questa data, il servizio verrà disattivato)</div>
+                        <div class="date-exp-msg">(data di scadenza e disattivazione dei servizi)</div>
                     </div>',
-            $template
+            $html
         );
 
         $customers_services_details = CustomersServicesDetails::with('service')
@@ -189,12 +228,13 @@ class Email extends Controller
 
         $customers_services_list_ .= '</div>';
 
-        $price_sell_tot = '&euro; ' . number_format($price_sell_tot, 2, ',', '.') . ' + IVA';
+        $price_sell_tot = $price_sell_tot * 1.22;
+        $price_sell_tot = '&euro; ' . number_format($price_sell_tot, 2, ',', '.');
 
-        $template = str_replace('[customers_services-list_]', $customers_services_list_, $template);
+        $html = str_replace('[customers_services-list_]', $customers_services_list_, $html);
 
-        $template = str_replace('[customers_services-total_]', $price_sell_tot, $template);
+        $html = str_replace('[customers_services-total_]', $price_sell_tot, $html);
 
-        return $template;
+        return $html;
     }
 }
