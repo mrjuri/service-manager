@@ -4,6 +4,22 @@
 
     <style>
 
+        .date-exp-container {
+            border: 4px dashed #f00;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            margin: 40px auto;
+        }
+        .date-exp {
+            font-size: 3em;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .date-exp-msg {
+            font-size: .8em;
+            white-space: nowrap;
+        }
         .mrj-logo-container .row div {
             padding: 0 !important;
         }
@@ -15,6 +31,19 @@
         }
         .mrj-logo {
             height: 80px;
+        }
+        .table,
+        .card {
+            margin-bottom: 0;
+            font-size: .8em;
+        }
+        .card-header,
+        .card-body {
+            padding: 5px;
+        }
+        .table tbody tr:hover td, .table tbody tr:hover th {
+            background-color: aqua;
+            color: blue;
         }
 
         @media only screen and (max-width: 1000px) {

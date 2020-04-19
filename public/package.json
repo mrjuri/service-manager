@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ckeditor/ckeditor5-alignment": "^18.0.0",
     "@ckeditor/ckeditor5-build-classic": "^15.0.0",
     "@fortawesome/fontawesome-free": "^5.11.2",
     "bootstrap": "^4.3.1",

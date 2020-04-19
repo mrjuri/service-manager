@@ -154,7 +154,7 @@
                 </script>
 
             </div>
-            <div class="tab-pane fade show active" id="nav-mail-exp" role="tabpanel" aria-labelledby="nav-mail-exp-tab">
+            <div class="tab-pane fade show" id="nav-mail-exp" role="tabpanel" aria-labelledby="nav-mail-exp-tab">
                 expirated
             </div>
         </div>
