@@ -13,7 +13,7 @@
 <table class="table table-hover">
     <thead>
     <tr>
-        <th style="width: 120px;"></th>
+        <th style="width: 180px;"></th>
         <th>Cliente <small>(hai {{ count($customersServices) }} scadenze)</small></th>
         <th>Servizio</th>
         <th class="text-center">Scadenza</th>
@@ -29,28 +29,43 @@
 
         @if(date('YmdHis', strtotime('+2 month')) > date('YmdHis', strtotime($customersService->expiration)))
             @php($className = 'table-warning')
+            @php($btnClassName = 'btn-warning')
         @endif
 
         @if(date('YmdHis') > date('YmdHis', strtotime($customersService->expiration)))
             @php($className = 'table-danger text-danger')
+            @php($btnClassName = 'btn-danger')
         @endif
 
         <tr class="{{ $className }}">
             <td class="text-center align-middle">
 
                 @if(date('YmdHis', strtotime('+2 month')) > date('YmdHis', strtotime($customersService->expiration)))
-                    <button type="button"
-                            class="btn btn-dark"
-                            data-toggle="modal"
-                            data-target="#renewModal"
-                            data-href="{{ route('customer.renew', $customersService->id) }}">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                    <a class="btn btn-dark"
-                       target="_blank"
-                       href="{{ route('email.exp', [$customersService->customer->id, $customersService->id]) }}">
-                        <i class="fas fa-at"></i>
-                    </a>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <button type="button"
+                                    class="btn btn-block btn-sm {{ $btnClassName }}"
+                                    data-toggle="modal"
+                                    data-target="#renewModal"
+                                    data-href="{{ route('customer.renew', $customersService->id) }}">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div class="col-lg-4">
+                            <a class="btn btn-block btn-sm {{ $btnClassName }}"
+                               target="_blank"
+                               href="{{ route('email.exp', [$customersService->customer->id, $customersService->id]) }}">
+                                <i class="fas fa-at"></i>
+                            </a>
+                        </div>
+                        <div class="col-lg-4">
+                            <a class="btn btn-block btn-sm {{ $btnClassName }}"
+                               target="_blank"
+                               href="#">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </a>
+                        </div>
+                    </div>
                 @endif
             </td>
             <td class="btn-row" data-toggle="collapse" data-target="#details-{{ $customersService->id }}">
@@ -118,7 +133,7 @@
                             @if(isset($detail->service))
 
                                 <tr class="{{ $className }}">
-                                    <th style="width: 120px;"></th>
+                                    <th style="width: 180px;"></th>
                                     <td>
 
                                         {{ $detail->service->name }}

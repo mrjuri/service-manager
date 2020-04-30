@@ -221,11 +221,19 @@ class Email extends Controller
                 border-bottom: 1px solid #ccc;
                 font-weight: normal;
             }
+            .title-service-details {
+                margin-bottom: 15px;
+                text-align: center;
+                color: #aaa;
+            }
         </style>
         ';
 
+        $customers_services_list_ .= '
+        <div class="title-service-details">
+            Gli elementi che compongono il servizio ' . $customers_service->name . ' per ' . $customers_service->reference . '
+        </div>';
         $customers_services_list_ .= '<div class="tbl-container">';
-//        $customers_services_list_ .= 'Gli elementi elencati di seguito compongono il servizio [customers_services-name] per [customers_services-reference]';
 
         foreach ($array_rows as $k => $a) {
 
