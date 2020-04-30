@@ -14,7 +14,7 @@
     <thead>
     <tr>
         <th style="width: 120px;"></th>
-        <th>Cliente</th>
+        <th>Cliente <small>(hai {{ count($customersServices) }} scadenze)</small></th>
         <th>Servizio</th>
         <th class="text-center">Scadenza</th>
         <th class="text-right">Importo</th>
