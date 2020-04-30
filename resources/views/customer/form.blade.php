@@ -190,7 +190,7 @@
                                     @endif />
 
                             </div>
-                            <div class="col-lg-3">
+                            <div class="col-lg-2">
 
                                 <input type="text"
                                        class="form-control"
@@ -204,6 +204,15 @@
                                        @if (isset($customerService->customer_name))
                                        value="{{ $customerService->customer_name }}"
                                     @endif />
+
+                            </div>
+                            <div class="col-lg-1">
+
+                                <a class="btn btn-warning btn-block"
+                                   target="_blank"
+                                   href="{{ route('email.exp', [$customer->id, $customerService->id]) }}">
+                                    <i class="fas fa-at"></i>
+                                </a>
 
                             </div>
                         </div>
