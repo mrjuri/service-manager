@@ -129,11 +129,20 @@ class Email extends Controller
         $customers = \App\Model\Customer::where('id', $customer_id)
                                         ->get();
         $customer = $customers[0];
-        $html = str_replace('[customers-name]', $customer->name, $html);
 
         $customers_services = CustomersServices::where('id', $customer_service_id)
                                                ->get();
         $customers_service = $customers_services[0];
+
+        if ($customers_service->customer_name) {
+
+            $html = str_replace('[customers-name]', $customers_service->customer_name, $html);
+
+        } else {
+
+            $html = str_replace('[customers-name]', $customer->name, $html);
+        }
+
         $html = str_replace('[customers_services-name]', $customers_service->name, $html);
         $html = str_replace('[customers_services-reference]', $customers_service->reference, $html);
         $html = str_replace(
@@ -144,6 +153,9 @@ class Email extends Controller
 
         $style_date_banner = '
             <style>
+            h2 {
+                margin-bottom: 15px;
+            }
             .date-exp-container {
                 border: 4px dashed #f00;
                 padding: 30px 0 15px 0;
@@ -177,6 +189,7 @@ class Email extends Controller
                                                               ->where('customer_id', $customer_id)
                                                               ->where('customer_service_id', $customer_service_id)
                                                               ->orderBy('price_sell', 'DESC')
+                                                              ->orderBy('reference', 'ASC')
                                                               ->get();
 
         foreach ($customers_services_details as $customer_service_detail) {
@@ -192,16 +205,35 @@ class Email extends Controller
         }
 
         $price_sell_tot = 0;
-        $customers_services_list_ = '<div class="row">';
+        $customers_services_list_ = '
+        <style>
+            .tbl-container {
+                background-color: #f5f5f5;
+                padding: 5px 15px 5px 15px;
+                border-radius: 6px;
+            }
+            .tbl-details {
+                color: #aaa;
+                margin-top: 5px;
+                margin-bottom: 15px;
+            }
+            .tbl-details th {
+                border-bottom: 1px solid #ccc;
+                font-weight: normal;
+            }
+        </style>
+        ';
+
+        $customers_services_list_ .= '<div class="tbl-container">';
+//        $customers_services_list_ .= 'Gli elementi elencati di seguito compongono il servizio [customers_services-name] per [customers_services-reference]';
 
         foreach ($array_rows as $k => $a) {
 
             $customers_services_list_ .= '
-                <div class="col-lg-6">
-                <div class="card border-warning">
-                    <div class="card-header bg-warning text-white border-warning">' . $k . '</div>
-                        <div class="card-body">
-                            <table class="table table-sm table-borderless table-hover">
+            <table width="100%" class="tbl-details">
+                <tr>
+                    <th colspan="2">' . $k . '</th>
+                </tr>
             ';
 
             foreach ($a as $v) {
@@ -209,7 +241,7 @@ class Email extends Controller
                 $customers_services_list_ .= '
                     <tr>
                         <td>' . $v['reference'] . '</td>
-                        <td class="text-right">&euro; ' . number_format($v['price_sell'], 2, ',', '.') . '</td>
+                        <td align="right">&euro; ' . number_format($v['price_sell'], 2, ',', '.') . '</td>
                     </tr>
                 ';
 
@@ -218,10 +250,7 @@ class Email extends Controller
             }
 
             $customers_services_list_ .= '
-                        </table>
-                    </div>
-                </div><br>
-                </div>
+            </table>
             ';
 
         }
@@ -234,6 +263,16 @@ class Email extends Controller
         $html = str_replace('[customers_services-list_]', $customers_services_list_, $html);
 
         $html = str_replace('[customers_services-total_]', $price_sell_tot, $html);
+
+        $html = str_replace(
+            '*|MC:SUBJECT|*',
+            '[' . $customers_service->reference . '] - ' . $customers_service->name . ' in scadenza',
+            $html);
+
+        $html = str_replace(
+            '*|MC_PREVIEW_TEXT|*',
+            date('d/m/Y', strtotime($customers_service->expiration)) . ' disattivazione ' . $customers_service->name . ' ' . $customers_service->reference,
+            $html);
 
         return $html;
     }
