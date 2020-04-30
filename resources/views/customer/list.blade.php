@@ -55,7 +55,7 @@
     <table class="table table-hover">
         <thead>
         <tr>
-            <th>Cliente</th>
+            <th>Cliente <small>(hai {{ count($customers) }} clienti)</small></th>
             <th class="text-right">Entrate</th>
             <th class="text-right">Uscite</th>
             <th class="text-right">Utile</th>
