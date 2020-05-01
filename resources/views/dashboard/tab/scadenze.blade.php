@@ -61,7 +61,7 @@
                         <div class="col-lg-4">
                             <a class="btn btn-block btn-sm {{ $btnClassName }}"
                                target="_blank"
-                               href="#">
+                               href="{{ route('fattureincloud.api.create', [$customersService->customer->id, $customersService->id]) }}">
                                 <i class="fas fa-file-invoice-dollar"></i>
                             </a>
                         </div>

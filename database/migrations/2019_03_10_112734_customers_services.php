@@ -17,6 +17,7 @@ class CustomersServices extends Migration
             $table->bigIncrements('id');
 
             $table->integer('customer_id');
+            $table->string('piva')->nullable();
             $table->string('company')->nullable();
             $table->string('email')->nullable();
             $table->string('customer_name')->nullable();

@@ -170,6 +170,7 @@ class Customer extends Controller
     public function store(Request $request)
     {
         $customer = new \App\Model\Customer();
+        $customer->piva = $request->input('piva');
         $customer->company = $request->input('company');
         $customer->name = $request->input('name');
         $customer->email = $request->input('email');
@@ -221,6 +222,7 @@ class Customer extends Controller
     public function update(Request $request, $id)
     {
         $customer = \App\Model\Customer::find($id);
+        $customer->piva = $request->input('piva');
         $customer->company = $request->input('company');
         $customer->name = $request->input('name');
         $customer->email = $request->input('email');
@@ -264,6 +266,7 @@ class Customer extends Controller
 
             $expiration = $request->input('service_expiration');
             $reference = $request->input('service_reference');
+            $piva = $request->input('service_piva');
             $company = $request->input('service_company');
             $email = $request->input('service_email');
             $customer_name = $request->input('service_customer_name');
@@ -277,6 +280,10 @@ class Customer extends Controller
 
             if (isset($company[$k])) {
                 $customerService->company = $company[$k];
+            }
+
+            if (isset($piva[$k])) {
+                $customerService->piva = $piva[$k];
             }
 
             if (isset($company[$k])) {

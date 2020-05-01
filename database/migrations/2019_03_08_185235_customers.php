@@ -16,6 +16,7 @@ class Customers extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->bigIncrements('id');
 
+            $table->string('piva');
             $table->string('company');
             $table->string('name');
             $table->string('email');

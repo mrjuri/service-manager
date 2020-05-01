@@ -106,7 +106,7 @@
             <div class="card-header">
 
                 <div class="row">
-                    <div class="col-lg-5">
+                    <div class="col-lg-4">
 
                         <input type="text"
                                class="form-control"
@@ -130,7 +130,7 @@
                             @endif />
 
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-2">
 
                         <input type="text"
                                class="form-control"
@@ -139,6 +139,18 @@
                                name="name"
                                @if (isset($customer->name))
                                value="{{ $customer->name }}"
+                            @endif />
+
+                    </div>
+                    <div class="col-lg-2">
+
+                        <input type="text"
+                               class="form-control"
+                               aria-describedby="piva"
+                               placeholder="p.iva"
+                               name="piva"
+                               @if (isset($customer->piva))
+                               value="{{ $customer->piva }}"
                             @endif />
 
                     </div>
@@ -158,7 +170,7 @@
                     <div class="card-header bg-warning">
 
                         <div class="row">
-                            <div class="col-lg-5">
+                            <div class="col-lg-4">
 
                                 <input type="text"
                                        class="form-control"
@@ -206,13 +218,25 @@
                                     @endif />
 
                             </div>
-                            <div class="col-lg-1">
+                            <div class="col-lg-2">
 
-                                <a class="btn btn-warning btn-block"
+                                <input type="text"
+                                       class="form-control"
+                                       aria-describedby="service_piva"
+                                       @if (isset($customer->piva))
+                                       placeholder="{{ $customer->piva }}"
+                                       @else
+                                       placeholder="p.iva"
+                                       @endif
+                                       name="service_piva[]"
+                                       @if (isset($customerService->piva))
+                                       value="{{ $customerService->piva }}"
+                                    @endif />
+                                {{--<a class="btn btn-warning btn-block"
                                    target="_blank"
                                    href="{{ route('email.exp', [$customer->id, $customerService->id]) }}">
                                     <i class="fas fa-at"></i>
-                                </a>
+                                </a>--}}
 
                             </div>
                         </div>
@@ -348,6 +372,21 @@
                             </div>
 
                         @endforeach
+
+                        <div class="form-group form-check" style="margin-bottom: 0;">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   id="singleVoice"
+                                   name="single_voice[]"
+                                   value="1"
+                                   @if (isset($service->single_voice) && $service->single_voice == 1)
+                                   checked
+                                @endif />
+
+                            <label class="form-check-label" for="singleVoice">
+                                <small>Voce unica in fattura</small>
+                            </label>
+                        </div>
 
                     </div>
 
