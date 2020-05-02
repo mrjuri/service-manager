@@ -340,11 +340,10 @@ class Customer extends Controller
 
     /**
      * Rinnovo del servizio
-     *
+     * 
      * @param $id
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function renew($id)
+    public function renew_service($id)
     {
         $customerService = \App\Model\CustomersServices::find($id);
 
@@ -353,6 +352,17 @@ class Customer extends Controller
 
         $customerService->expiration = $expirationTimestamp;
         $customerService->save();
+    }
+
+    /**
+     * Rinnovo del servizio e redirect
+     *
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function renew($id)
+    {
+        $this->renew_service($id);
 
         return redirect()->route('home');
     }
