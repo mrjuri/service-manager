@@ -27,7 +27,7 @@
         <div class="col-lg-6">
 
             <a href="{{ route('customer.create') }}" class="btn btn-primary">Nuovo</a>
-            <a href="{{ route('customer.create') }}" class="btn btn-primary">Filtro</a>
+{{--            <a href="{{ route('customer.create') }}" class="btn btn-primary">Filtro</a>--}}
 
         </div>
         <div class="col-lg-6">
