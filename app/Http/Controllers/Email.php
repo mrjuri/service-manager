@@ -21,8 +21,8 @@ class Email extends Controller
         $html = Storage::disk('public')->get('mail_template/expiration.html');
         $content = $this->get_template($html, $id);
 
-//        $this->sendExpiration();
-        
+//        $this->sendExpiration($id);
+
         return view('mail.expiration', [
             'content' => $content
         ]);
@@ -35,92 +35,48 @@ class Email extends Controller
         ]);*/
     }
 
-    public function sendExpiration()
+    public function sendExpiration($id)
     {
-        $id = 475;
-
         $html = Storage::disk('public')->get('mail_template/expiration.html');
         $content = $this->get_template($html, $id);
+        $data_array = $this->get_data($id);
 
-        Mail::to('juri@mr-j.it')
-            ->send(new Expiration($content));
+        Mail::to($data_array['to'])
+            ->send(new Expiration(
+                $data_array['subject'],
+                $content
+            ));
+
+        return redirect()->route('home');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function sendExpirationList()
     {
-        //
+
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function get_data($customer_service_id)
     {
-        //
+        $customer_service = CustomersServices::with('customer')
+                                             ->with('details')
+                                             ->find($customer_service_id);
+
+        $array = array(
+            'to' => $customer_service->email ? $customer_service->email : $customer_service->customer->email,
+            'subject' => '[' . $customer_service->reference . '] - ' . $customer_service->name . ' in scadenza',
+        );
+
+        return $array;
     }
 
     /**
-     * Display the specified resource.
+     * Restituisco i dati necessari a popolare il template
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-
-    /**
-     * Creazione template da inviare via email e visualizzare online
-     *
-     * @param $html
      * @param $customer_service_id
      *
-     * @return string|string[]
+     * @return array
      */
-    public function get_template($html, $customer_service_id)
+    public function get_data_str_replace($customer_service_id)
     {
         $customer_service = CustomersServices::with('customer')
                                              ->with('details')
@@ -144,9 +100,25 @@ class Email extends Controller
                 </div>
             ',
             '[customers_services-total_]' => $price_sell_tot,
+
             '*|MC:SUBJECT|*' => '[' . $customer_service->reference . '] - ' . $customer_service->name . ' in scadenza',
             '*|MC_PREVIEW_TEXT|*' => date('d/m/Y', strtotime($customer_service->expiration)) . ' disattivazione ' . $customer_service->name . ' ' . $customer_service->reference,
         );
+
+        return $str_replace_array;
+    }
+
+    /**
+     * Creazione template da inviare via email e visualizzare online
+     *
+     * @param $html
+     * @param $customer_service_id
+     *
+     * @return string|string[]
+     */
+    public function get_template($html, $customer_service_id)
+    {
+        $str_replace_array = $this->get_data_str_replace($customer_service_id);
 
         $style_custom = '
             <style>

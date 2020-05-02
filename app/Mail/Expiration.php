@@ -18,8 +18,9 @@ class Expiration extends Mailable
      *
      * @return void
      */
-    public function __construct($template)
+    public function __construct($subject, $template)
     {
+        $this->subject = $subject;
         $this->template = $template;
     }
 
@@ -30,8 +31,7 @@ class Expiration extends Mailable
      */
     public function build()
     {
-        return $this->from('juri@mr-j.it')
-                    ->subject('Servizio in scadenza')
+        return $this->subject($this->subject)
                     ->view('mail.service-expiration', [
                         'content' => $this->template
                     ]);
