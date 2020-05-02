@@ -2,8 +2,8 @@
 
     window.onload = function() {
 
-        $('#renewModal').on('show.bs.modal', function(e) {
-            $(this).find('#btn-del').attr('href', $(e.relatedTarget).data('href'));
+        $('.modal').on('show.bs.modal', function(e) {
+            $(this).find('.btn-confirm').attr('href', $(e.relatedTarget).data('href'));
         });
 
     };
@@ -44,7 +44,7 @@
                     <div class="row">
                         <div class="col-lg-4">
                             <button type="button"
-                                    class="btn btn-block btn-sm {{ $btnClassName }}"
+                                    class="btn btn-block btn-sm btn-modal {{ $btnClassName }}"
                                     data-toggle="modal"
                                     data-target="#renewModal"
                                     data-href="{{ route('customer.renew', $customersService->id) }}">
@@ -52,18 +52,22 @@
                             </button>
                         </div>
                         <div class="col-lg-4">
-                            <a class="btn btn-block btn-sm {{ $btnClassName }}"
-                               target="_blank"
-                               href="{{ route('email.exp', [$customersService->customer->id, $customersService->id]) }}">
+                            <button type="button"
+                                    class="btn btn-block btn-sm btn-modal {{ $btnClassName }}"
+                                    data-toggle="modal"
+                                    data-target="#sendAlertModal"
+                                    data-href="{{ route('email.exp', [$customersService->customer->id, $customersService->id]) }}">
                                 <i class="fas fa-at"></i>
-                            </a>
+                            </button>
                         </div>
                         <div class="col-lg-4">
-                            <a class="btn btn-block btn-sm {{ $btnClassName }}"
-                               target="_blank"
-                               href="{{ route('fattureincloud.api.create', [$customersService->customer->id, $customersService->id]) }}">
+                            <button type="button"
+                                    class="btn btn-block btn-sm btn-modal {{ $btnClassName }}"
+                                    data-toggle="modal"
+                                    data-target="#invoiceModal"
+                                    data-href="{{ route('fattureincloud.api.create', [$customersService->customer->id, $customersService->id]) }}">
                                 <i class="fas fa-file-invoice-dollar"></i>
-                            </a>
+                            </button>
                         </div>
                     </div>
                 @endif
@@ -187,7 +191,69 @@
                 <div class="row">
                     <div class="col-lg-6">
 
-                        <a href="#" id="btn-del" class="btn btn-success btn-block">Sì</a>
+                        <a href="#" class="btn btn-success btn-block btn-confirm">Sì</a>
+
+                    </div>
+                    <div class="col-lg-6">
+
+                        <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">No</button>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="sendAlertModal" tabindex="-1" role="dialog" aria-labelledby="sendAlertModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sendAlertModalLabel">Avvisa il cliente</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Vuoi inviare un avviso via email al cliente?
+
+                <br /><br />
+
+                <div class="row">
+                    <div class="col-lg-6">
+
+                        <a href="#" class="btn btn-success btn-block btn-confirm">Sì</a>
+
+                    </div>
+                    <div class="col-lg-6">
+
+                        <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">No</button>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="invoiceModal" tabindex="-1" role="dialog" aria-labelledby="invoiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="invoiceModalLabel">Genera fattura</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Vuoi inviare la fattura al cliente?
+
+                <br /><br />
+
+                <div class="row">
+                    <div class="col-lg-6">
+
+                        <a href="#" class="btn btn-success btn-block btn-confirm">Sì</a>
 
                     </div>
                     <div class="col-lg-6">
