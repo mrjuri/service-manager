@@ -13,15 +13,16 @@ class FattureInCloudAPI extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($customer_id, $customer_service_id)
+    public function create($customer_service_id)
     {
         /**
          * Recupero dati per la fattura
          */
-        $customer = \App\Model\Customer::find($customer_id);
-        $customer_service = CustomersServices::find($customer_service_id);
+        $customer_service = CustomersServices::with('customer')
+                                             ->with('details')
+                                             ->find($customer_service_id);
+
         $customers_services_details = CustomersServicesDetails::with('service')
-                                                              ->where('customer_id', $customer_id)
                                                               ->where('customer_service_id', $customer_service_id)
                                                               ->orderBy('price_sell', 'DESC')
                                                               ->orderBy('reference', 'ASC')
@@ -39,7 +40,6 @@ class FattureInCloudAPI extends Controller
             }
 
             $array_rows[$customer_service_detail->service->name_customer_view]['reference'][] = $customer_service_detail->reference;
-
         }
 
         /**
@@ -70,8 +70,8 @@ class FattureInCloudAPI extends Controller
         $request = array(
             'api_uid' => env('FIC_API_UID'),
             'api_key' => env('FIC_API_KEY'),
-            'nome' => $customer_service->customer_name ? $customer_service->customer_name : $customer->name,
-            'piva' => $customer_service->piva ? $customer_service->piva : $customer->piva,
+            'nome' => $customer_service->customer_name ? $customer_service->customer_name : $customer_service->customer->name,
+            'piva' => $customer_service->piva ? $customer_service->piva : $customer_service->customer->piva,
             'autocompila_anagrafica' => true,
             'mostra_info_pagamento' => true,
             'metodo_pagamento' => env('FIC_metodo_pagamento'),
@@ -115,14 +115,20 @@ class FattureInCloudAPI extends Controller
                     'api_key' => env('FIC_API_KEY'),
                     'id' => $fattura_nuova['new_id'],
                     'mail_mittente' => $infomail['mail_mittente'][0]['mail'],
-                    'mail_destinatario' => $customer_service->email ? $customer_service->email : $customer->email,
+                    'mail_destinatario' => $customer_service->email ? $customer_service->email : $customer_service->customer->email,
                     'oggetto' => $infomail['oggetto_default'],
                     'messaggio' => $infomail['messaggio_default']
                 )
             );
         }
 
-        return $fattura_inviamail;
+        if ($fattura_inviamail['success'] == true) {
+
+            $customer = new Customer();
+            $customer->renew_service($customer_service_id);
+
+            return redirect()->route('home');
+        }
     }
 
     /**

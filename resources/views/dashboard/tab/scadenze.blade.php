@@ -65,7 +65,7 @@
                                     class="btn btn-block btn-sm btn-modal {{ $btnClassName }}"
                                     data-toggle="modal"
                                     data-target="#invoiceModal"
-                                    data-href="{{ route('fattureincloud.api.create', [$customersService->customer->id, $customersService->id]) }}">
+                                    data-href="{{ route('fattureincloud.api.create', $customersService->id) }}">
                                 <i class="fas fa-file-invoice-dollar"></i>
                             </button>
                         </div>
@@ -247,6 +247,12 @@
             </div>
             <div class="modal-body">
                 Vuoi inviare la fattura al cliente?
+                <br><br>
+                <small>
+                    <strong>Nota:</strong>
+                    <br>
+                    Generando la fattura rinnoverai automaticamente il servizio
+                </small>
 
                 <br /><br />
 

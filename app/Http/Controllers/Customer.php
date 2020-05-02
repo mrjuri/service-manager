@@ -340,7 +340,7 @@ class Customer extends Controller
 
     /**
      * Rinnovo del servizio
-     * 
+     *
      * @param $id
      */
     public function renew_service($id)
