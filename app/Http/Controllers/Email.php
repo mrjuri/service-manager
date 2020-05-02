@@ -16,11 +16,13 @@ class Email extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($customer_id, $customer_service_id)
+    public function index($id)
     {
         $html = Storage::disk('public')->get('mail_template/expiration.html');
-        $content = $this->template($html, $customer_id, $customer_service_id);
+        $content = $this->get_template($html, $id);
 
+//        $this->sendExpiration();
+        
         return view('mail.expiration', [
             'content' => $content
         ]);
@@ -35,19 +37,13 @@ class Email extends Controller
 
     public function sendExpiration()
     {
-        $customer_id = 30;
-        $customer_service_id = 421;
+        $id = 475;
 
         $html = Storage::disk('public')->get('mail_template/expiration.html');
-        $content = $this->template($html, $customer_id, $customer_service_id);
+        $content = $this->get_template($html, $id);
 
-        Mail::to('juri.paiusco@gmail.com')
+        Mail::to('juri@mr-j.it')
             ->send(new Expiration($content));
-
-        /*$template = $this->template($customer_id, $customer_service_id);
-
-        Mail::to('juri.paiusco@gmail.com')
-            ->send(new Expiration($template));*/
     }
 
     /**
@@ -119,39 +115,40 @@ class Email extends Controller
     /**
      * Creazione template da inviare via email e visualizzare online
      *
-     * @param $customer_id
+     * @param $html
      * @param $customer_service_id
      *
      * @return string|string[]
      */
-    public function template($html, $customer_id, $customer_service_id)
+    public function get_template($html, $customer_service_id)
     {
-        $customers = \App\Model\Customer::where('id', $customer_id)
-                                        ->get();
-        $customer = $customers[0];
+        $customer_service = CustomersServices::with('customer')
+                                             ->with('details')
+                                             ->find($customer_service_id);
 
-        $customers_services = CustomersServices::where('id', $customer_service_id)
-                                               ->get();
-        $customers_service = $customers_services[0];
-
-        if ($customers_service->customer_name) {
-
-            $html = str_replace('[customers-name]', $customers_service->customer_name, $html);
-
-        } else {
-
-            $html = str_replace('[customers-name]', $customer->name, $html);
+        $price_sell_tot = 0;
+        foreach ($customer_service->details as $detail) {
+            $price_sell_tot += $detail->price_sell;
         }
+        $price_sell_tot = '&euro; ' . number_format($price_sell_tot * 1.22, 2, ',', '.');
 
-        $html = str_replace('[customers_services-name]', $customers_service->name, $html);
-        $html = str_replace('[customers_services-reference]', $customers_service->reference, $html);
-        $html = str_replace(
-            '[customers_services-expiration]',
-            date('d/m/Y', strtotime($customers_service->expiration)),
-            $html
+        $str_replace_array = array(
+            '[customers-name]' => $customer_service->customer_name ? $customer_service->customer_name : $customer_service->customer->name,
+            '[customers_services-name]' => $customer_service->name,
+            '[customers_services-reference]' => $customer_service->reference,
+            '[customers_services-expiration]' => date('d/m/Y', strtotime($customer_service->expiration)),
+            '[customers_services-expiration-banner]' => '
+                <div class="date-exp-container">
+                    <div class="date-exp">'. date('d-m-Y', strtotime($customer_service->expiration)) . '</div>
+                    <div class="date-exp-msg">(data di scadenza e disattivazione dei servizi)</div>
+                </div>
+            ',
+            '[customers_services-total_]' => $price_sell_tot,
+            '*|MC:SUBJECT|*' => '[' . $customer_service->reference . '] - ' . $customer_service->name . ' in scadenza',
+            '*|MC_PREVIEW_TEXT|*' => date('d/m/Y', strtotime($customer_service->expiration)) . ' disattivazione ' . $customer_service->name . ' ' . $customer_service->reference,
         );
 
-        $style_date_banner = '
+        $style_custom = '
             <style>
             h2 {
                 margin-bottom: 15px;
@@ -173,40 +170,6 @@ class Email extends Controller
                 font-size: .75em;
                 white-space: nowrap;
             }
-            </style>
-        ';
-
-        $html = str_replace(
-            '[customers_services-expiration-banner]',
-            $style_date_banner . '<div class="date-exp-container">
-                        <div class="date-exp">'. date('d-m-Y', strtotime($customers_service->expiration)) . '</div>
-                        <div class="date-exp-msg">(data di scadenza e disattivazione dei servizi)</div>
-                    </div>',
-            $html
-        );
-
-        $customers_services_details = CustomersServicesDetails::with('service')
-                                                              ->where('customer_id', $customer_id)
-                                                              ->where('customer_service_id', $customer_service_id)
-                                                              ->orderBy('price_sell', 'DESC')
-                                                              ->orderBy('reference', 'ASC')
-                                                              ->get();
-
-        foreach ($customers_services_details as $customer_service_detail) {
-
-            if (!isset($array_rows[$customer_service_detail->service->name_customer_view]))
-                $array_rows[$customer_service_detail->service->name_customer_view] = array();
-
-            $array_rows[$customer_service_detail->service->name_customer_view][] = array(
-                'reference' => $customer_service_detail->reference,
-                'price_sell' => $customer_service_detail->price_sell,
-            );
-
-        }
-
-        $price_sell_tot = 0;
-        $customers_services_list_ = '
-        <style>
             .tbl-container {
                 background-color: #f5f5f5;
                 padding: 5px 15px 5px 15px;
@@ -226,12 +189,41 @@ class Email extends Controller
                 text-align: center;
                 color: #aaa;
             }
-        </style>
+            </style>
         ';
+        $style_custom = str_replace('<style>', '', $style_custom);
+        $html = str_replace('</style>', $style_custom, $html);
 
-        $customers_services_list_ .= '
+        foreach ($str_replace_array as $k => $v) {
+
+            $html = str_replace($k, $v, $html);
+
+        }
+
+        /*
+        $customers_services_details = CustomersServicesDetails::with('service')
+                                                              ->where('customer_id', $customer_service->customer->id)
+                                                              ->where('customer_service_id', $customer_service_id)
+                                                              ->orderBy('price_sell', 'DESC')
+                                                              ->orderBy('reference', 'ASC')
+                                                              ->get();
+
+        foreach ($customers_services_details as $customer_service_detail) {
+
+            if (!isset($array_rows[$customer_service_detail->service->name_customer_view]))
+                $array_rows[$customer_service_detail->service->name_customer_view] = array();
+
+            $array_rows[$customer_service_detail->service->name_customer_view][] = array(
+                'reference' => $customer_service_detail->reference,
+                'price_sell' => $customer_service_detail->price_sell,
+            );
+
+        }
+
+        $price_sell_tot = 0;
+        $customers_services_list_ = '
         <div class="title-service-details">
-            Gli elementi che compongono il servizio ' . $customers_service->name . ' per ' . $customers_service->reference . '
+            Gli elementi che compongono il servizio ' . $customer_service->name . ' per ' . $customer_service->reference . '
         </div>';
         $customers_services_list_ .= '<div class="tbl-container">';
 
@@ -269,18 +261,7 @@ class Email extends Controller
         $price_sell_tot = '&euro; ' . number_format($price_sell_tot, 2, ',', '.');
 
         $html = str_replace('[customers_services-list_]', $customers_services_list_, $html);
-
-        $html = str_replace('[customers_services-total_]', $price_sell_tot, $html);
-
-        $html = str_replace(
-            '*|MC:SUBJECT|*',
-            '[' . $customers_service->reference . '] - ' . $customers_service->name . ' in scadenza',
-            $html);
-
-        $html = str_replace(
-            '*|MC_PREVIEW_TEXT|*',
-            date('d/m/Y', strtotime($customers_service->expiration)) . ' disattivazione ' . $customers_service->name . ' ' . $customers_service->reference,
-            $html);
+        */
 
         return $html;
     }

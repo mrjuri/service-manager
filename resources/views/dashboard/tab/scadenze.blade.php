@@ -56,7 +56,7 @@
                                     class="btn btn-block btn-sm btn-modal {{ $btnClassName }}"
                                     data-toggle="modal"
                                     data-target="#sendAlertModal"
-                                    data-href="{{ route('email.exp', [$customersService->customer->id, $customersService->id]) }}">
+                                    data-href="{{ route('email.exp', $customersService->id) }}">
                                 <i class="fas fa-at"></i>
                             </button>
                         </div>
