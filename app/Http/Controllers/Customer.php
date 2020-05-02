@@ -286,11 +286,11 @@ class Customer extends Controller
                 $customerService->piva = $piva[$k];
             }
 
-            if (isset($company[$k])) {
+            if (isset($email[$k])) {
                 $customerService->email = $email[$k];
             }
 
-            if (isset($company[$k])) {
+            if (isset($customer_name[$k])) {
                 $customerService->customer_name = $customer_name[$k];
             }
 
