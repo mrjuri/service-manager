@@ -65,7 +65,7 @@ Route::post('/setting/store', 'Setting@store')
     ->name('setting.store');
 
 //Route::get('/list', 'Domain@get_list');
-Route::get('/mail/service-expiration/{id}', 'Email@sendExpiration')
+Route::get('/mail/service-expiration/{id}', 'Email@sendExpirationService')
     ->name('email.exp');
 
 Route::get('/fattureincloud/create/{id}', 'FattureInCloudAPI@create')

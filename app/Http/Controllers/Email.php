@@ -46,6 +46,11 @@ class Email extends Controller
                 $data_array['subject'],
                 $content
             ));
+    }
+
+    public function sendExpirationService($id)
+    {
+        $this->sendExpiration($id);
 
         return redirect()->route('home');
     }
