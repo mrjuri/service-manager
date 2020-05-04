@@ -7,9 +7,15 @@
         .text-gray {
             color: #888;
         }
-        .table .text-small {
+        .table .text-small,
+        .privacy-content {
             font-size: 12px;
             color: #888;
+        }
+        .privacy-content {
+            border: 1px dashed #888;
+            border-radius: 6px;
+            padding: 15px;
         }
         .table-total-container {
             background-color: #f5f5f5;
@@ -22,6 +28,9 @@
         }
         .table .text-big {
             font-size: 1.4em;
+        }
+        .table thead {
+            font-weight: bold;
         }
         .table tbody .text-right {
             white-space: nowrap;
@@ -62,6 +71,25 @@
             ObjPayment.on('change', function () {
 
                 paymentCheck($(this));
+
+            });
+
+            $('#privacy').on('change', function () {
+
+                if($(this).prop('checked')) {
+
+                    $('#btn-submit').removeClass('disabled').removeAttr('disabled');
+
+                } else {
+
+                    $('#btn-submit').addClass('disabled').attr('disabled', true);
+                }
+
+            });
+
+            $('#btn-submit').on('click', function () {
+
+                alert('Mi hai cliccato!');
 
             });
 
@@ -232,9 +260,9 @@
                         <table class="table table-sm">
                             <thead class="text-small">
                             <tr>
-                                <th>Servizio</th>
-                                <th class="text-center"></th>
-                                <th class="text-right">Importo</th>
+                                <td>Servizio</td>
+                                <td class="text-center"></td>
+                                <td class="text-right">Importo</td>
                             </tr>
                             </thead>
 
@@ -328,7 +356,9 @@
 
                         </table>
 
+                        @if($discount_total > 0)
                         <small class="text-gray">* servizi ai quali è stato applicato uno sconto.</small>
+                        @endif
 
                     </div>
 
@@ -358,7 +388,20 @@
                             </div>
                         </div>
 
-                        <button class="btn btn-success btn-lg btn-block">
+                        <div class="privacy-content">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" id="privacy" name="privacy" class="custom-control-input">
+                                <label class="custom-control-label" for="privacy">
+                                    <small>
+                                        {!! $privacy_msg !!}
+                                    </small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <br>
+
+                        <button type="submit" id="btn-submit" class="btn btn-success btn-lg btn-block disabled" disabled>
                             Concludi ordine
                         </button>
 

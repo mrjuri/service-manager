@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Model\CustomersServices;
 use App\Model\CustomersServicesDetails;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class Payment extends Controller
 {
@@ -85,11 +86,14 @@ class Payment extends Controller
             )
         );
 
+        $privacy_msg = Storage::disk('public')->get('privacy_template/privacy.html');
+
         return view('payment.checkout', [
             'customer_service' => $customer_service,
             'customers_services_details' => $customers_services_details,
             'array_services_rows' => $array_services_rows,
             'cliente' => $cliente['lista_clienti'][0],
+            'privacy_msg' => $privacy_msg,
         ]);
     }
 
