@@ -57,12 +57,16 @@ class Payment extends Controller
                                                               ->orderBy('reference', 'ASC')
                                                               ->get();
 
+//        dd($customers_services_details);
+
         foreach ($customers_services_details as $customer_service_detail) {
 
             if (!isset($array_services_rows[$customer_service_detail->service->name_customer_view])) {
 
                 $array_services_rows[$customer_service_detail->service->name_customer_view] = array(
-                    'price_sell' => $customer_service_detail->price_sell,
+                    'price_sell' => $customer_service_detail->service->price_sell,
+                    'price_customer_sell' => $customer_service_detail->price_sell,
+                    'is_share' => $customer_service_detail->service->is_share,
                     'reference' => array()
                 );
 
@@ -83,6 +87,7 @@ class Payment extends Controller
 
         return view('payment.checkout', [
             'customer_service' => $customer_service,
+            'customers_services_details' => $customers_services_details,
             'array_services_rows' => $array_services_rows,
             'cliente' => $cliente['lista_clienti'][0],
         ]);

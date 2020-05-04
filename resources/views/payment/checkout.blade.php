@@ -4,6 +4,9 @@
 
     <style>
 
+        .text-gray {
+            color: #888;
+        }
         .table .text-small {
             font-size: 12px;
             color: #888;
@@ -234,11 +237,27 @@
                                 <th class="text-right">Importo</th>
                             </tr>
                             </thead>
+
                             <tbody class="text-small">
 
                             @php($services_total = 0)
+                            @php($discount_total = 0)
+                            @php($services_discount_total = 0)
 
                             @foreach($array_services_rows as $k => $v)
+
+                                @if($v['price_customer_sell'] >= $v['price_sell'])
+                                    @php($service_price = $v['price_customer_sell'])
+                                @else
+                                    @php($service_price = $v['price_sell'])
+                                @endif
+
+                                @php($discount = 0)
+                                @php($discount_alert = 0)
+                                @if($v['price_sell'] > $v['price_customer_sell'] && $v['is_share'] != 1)
+                                    @php($discount_alert = 1)
+                                    @php($discount = $v['price_sell'] - $v['price_customer_sell'])
+                                @endif
 
                                 <tr>
                                     <td>
@@ -247,43 +266,69 @@
                                     <td class="text-center">
                                         <small>
                                             @if(count($v['reference']) > 1)
-                                                {{ count($v['reference']) }} x &euro; {{ number_format($v['price_sell'], 2, ',', '.') }}
+                                                {{ count($v['reference']) }} x &euro; {{ number_format($service_price, 2, ',', '.') }}
                                             @endif
                                         </small>
                                     </td>
                                     <td class="text-right">
-                                        &euro; {{ number_format((count($v['reference']) * $v['price_sell']), 2, ',', '.') }}
+                                        @if($discount_alert == 1)
+                                            *
+                                        @endif
+                                        &euro; {{ number_format((count($v['reference']) * $service_price), 2, ',', '.') }}
                                     </td>
                                 </tr>
 
-                                @php($services_total += $v['price_sell'] * count($v['reference']))
+                                @php($services_total += $service_price * count($v['reference']))
+                                @php($discount_total += $discount)
 
                             @endforeach
 
+                            @if($discount_total > 0)
+                                <tr>
+                                    <td>
+                                        @php($discount_per = $discount_total/$services_total*100)
+                                        Sconto incondizionato
+
+                                        @if($discount_per >= 10)
+                                            (<strong>
+                                                {{ number_format($discount_per, 2, ',', '.') }}%
+                                            </strong>)
+                                        @endif
+                                    </td>
+                                    <td colspan="2" class="text-right">
+                                        <strong>- &euro; {{ number_format($discount_total, 2, ',', '.') }}</strong>
+                                    </td>
+                                </tr>
+                            @endif
+
                             </tbody>
                         </table>
+
+                        @php($total = $services_total - $discount_total)
 
                         <table class="table table-sm table-borderless table-total-container">
 
                             <tr class="text-small">
                                 <td>Imponibile</td>
                                 <td colspan="2" class="text-right">
-                                    &euro; {{ number_format($services_total, 2, ',', '.') }}
+                                    &euro; {{ number_format($total, 2, ',', '.') }}
                                 </td>
                             </tr>
                             <tr class="text-small">
                                 <td>Totale IVA</td>
                                 <td colspan="2" class="text-right">
-                                    &euro; {{ number_format(($services_total * 1.22 - $services_total), 2, ',', '.') }}
+                                    &euro; {{ number_format(($total * 1.22 - $total), 2, ',', '.') }}
                                 </td>
                             </tr>
                             <tr class="text-big">
                                 <th colspan="3" class="text-right">
-                                    &euro; {{ number_format($services_total * 1.22, 2, ',', '.') }}
+                                    &euro; {{ number_format($total * 1.22, 2, ',', '.') }}
                                 </th>
                             </tr>
 
                         </table>
+
+                        <small class="text-gray">* servizi ai quali è stato applicato uno sconto.</small>
 
                     </div>
 
