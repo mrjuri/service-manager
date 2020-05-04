@@ -78,18 +78,24 @@
 
                 if($(this).prop('checked')) {
 
-                    $('#btn-submit').removeClass('disabled').removeAttr('disabled');
+                    $('#btn-submit').removeClass('disabled');
 
                 } else {
 
-                    $('#btn-submit').addClass('disabled').attr('disabled', true);
+                    $('#btn-submit').addClass('disabled');
                 }
 
             });
 
             $('#btn-submit').on('click', function () {
 
-                alert('Mi hai cliccato!');
+                if($(this).hasClass('disabled')) {
+
+                    $('#privacyError').modal('show');
+
+                    return false;
+
+                }
 
             });
 
@@ -366,53 +372,79 @@
 
                 <br>
 
-                <div class="card border-success">
-                    <div class="card-header bg-success border-success text-white">
+                <form action="#" method="post">
 
-                        Metodo di pagamento
+                    <div class="card border-success">
+                        <div class="card-header bg-success border-success text-white">
 
+                            Metodo di pagamento
+
+                        </div>
+                        <div class="card-body">
+
+                            <div class="alert text-secondary">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="bonifico" name="payment" class="custom-control-input" checked>
+                                    <label class="custom-control-label" for="bonifico">Bonifico</label>
+                                </div>
+                            </div>
+
+                            <div class="alert text-secondary">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="paypal" name="payment" class="custom-control-input">
+                                    <label class="custom-control-label" for="paypal">PayPal / Carta di Credito</label>
+                                </div>
+                            </div>
+
+                            <div class="privacy-content">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" id="privacy" name="privacy" class="custom-control-input">
+                                    <label class="custom-control-label" for="privacy">
+                                        <small>
+                                            {!! $privacy_msg !!}
+                                        </small>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <br>
+
+                            <button type="submit"
+                                    id="btn-submit"
+                                    class="btn btn-success btn-lg btn-block disabled">
+                                Conferma il rinnovo
+                            </button>
+
+                        </div>
                     </div>
-                    <div class="card-body">
 
-                        <div class="alert text-secondary">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" id="bonifico" name="payment" class="custom-control-input" checked>
-                                <label class="custom-control-label" for="bonifico">Bonifico</label>
-                            </div>
-                        </div>
-
-                        <div class="alert text-secondary">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" id="paypal" name="payment" class="custom-control-input">
-                                <label class="custom-control-label" for="paypal">PayPal / Carta di Credito</label>
-                            </div>
-                        </div>
-
-                        <div class="privacy-content">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" id="privacy" name="privacy" class="custom-control-input">
-                                <label class="custom-control-label" for="privacy">
-                                    <small>
-                                        {!! $privacy_msg !!}
-                                    </small>
-                                </label>
-                            </div>
-                        </div>
-
-                        <br>
-
-                        <button type="submit" id="btn-submit" class="btn btn-success btn-lg btn-block disabled" disabled>
-                            Concludi ordine
-                        </button>
-
-                    </div>
-                </div>
+                </form>
 
                 <br>
 
             </div>
         </div>
 
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="privacyError" tabindex="-1" role="dialog" aria-labelledby="privacyErrorTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="privacyErrorTitle">Privacy Policy non accettata.</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    È necessario dare il consenso alla privacy policy per poter rinnovare il servizio.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 
 @endsection
