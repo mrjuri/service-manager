@@ -391,12 +391,12 @@
                                 </div>
                             </div>
 
-                            <div class="alert text-secondary">
+                            {{--<div class="alert text-secondary">
                                 <div class="custom-control custom-radio">
                                     <input type="radio" id="paypal" name="payment" class="custom-control-input">
                                     <label class="custom-control-label" for="paypal">PayPal / Carta di Credito</label>
                                 </div>
-                            </div>
+                            </div>--}}
 
                             <div class="privacy-content">
                                 <div class="custom-control custom-checkbox">
