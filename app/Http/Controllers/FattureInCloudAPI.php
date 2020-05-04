@@ -15,6 +15,19 @@ class FattureInCloudAPI extends Controller
      */
     public function create($customer_service_id)
     {
+        /*$infoaccount = $this->api(
+            'info/account',
+            array(
+                'api_uid' => env('FIC_API_UID'),
+                'api_key' => env('FIC_API_KEY'),
+                'campi' => [
+                    "lista_metodi_pagamento"
+                ]
+            )
+        );
+
+        dd($infoaccount);*/
+
         /**
          * Recupero dati per la fattura
          */
@@ -74,9 +87,7 @@ class FattureInCloudAPI extends Controller
             'piva' => $customer_service->piva ? $customer_service->piva : $customer_service->customer->piva,
             'autocompila_anagrafica' => true,
             'mostra_info_pagamento' => true,
-            'metodo_pagamento' => env('FIC_metodo_pagamento'),
-            'metodo_titoloN' => env('FIC_metodo_titoloN'),
-            'metodo_descN' => env('FIC_metodo_descN'),
+            'metodo_id' => env('FIC_metodo_id'),
             'prezzi_ivati' => false,
             'PA' => true,
             'PA_tipo_cliente' => 'B2B',
