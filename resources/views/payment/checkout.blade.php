@@ -25,11 +25,56 @@
         }
 
     </style>
+
+    <script type="text/javascript">
+
+        window.onload = function () {
+
+            function paymentCheck(Obj) {
+
+                var color = 'success';
+
+                $('.alert.border-' + color)
+                    .removeClass('border-' + color)
+                    .removeClass('text-' + color);
+
+                Obj.closest('.alert')
+                    .addClass('border-' + color)
+                    .addClass('text-' + color);
+
+            }
+
+            var ObjPayment = $('[name="payment"]');
+
+            ObjPayment.each(function () {
+
+                var Obj = $(this);
+
+                if(Obj.prop('checked')) {
+                    paymentCheck(Obj);
+                }
+
+            });
+
+            ObjPayment.on('change', function () {
+
+                paymentCheck($(this));
+
+            });
+
+        };
+
+    </script>
+
     <div class="container">
 
         <br>
 
-        <h1 class="text-center">Conferma il rinnovo dei servizi.</h1>
+        <h1 class="text-center">Conferma il tuo rinnovo.</h1>
+
+        <div class="text-center">
+            Il rinnovo è relativo al servizio <strong>{{ $customer_service->name }}</strong>  di <strong>{{ $customer_service->reference }}</strong>
+        </div>
 
         <br>
 
@@ -177,7 +222,7 @@
                 <div class="card">
 
                     <div class="card-header">
-                        {{ $customer_service->name }} {{ $customer_service->reference }}
+                        {{ $customer_service->name }} <strong>{{ $customer_service->reference }}</strong>
                     </div>
                     <div class="card-body">
 
@@ -254,22 +299,22 @@
                     </div>
                     <div class="card-body">
 
-                        <div class="alert alert-secondary">
+                        <div class="alert text-secondary">
                             <div class="custom-control custom-radio">
-                                <input type="radio" id="bonifico" name="payment" class="custom-control-input">
+                                <input type="radio" id="bonifico" name="payment" class="custom-control-input" checked>
                                 <label class="custom-control-label" for="bonifico">Bonifico</label>
                             </div>
                         </div>
 
-                        <div class="alert alert-secondary">
+                        <div class="alert text-secondary">
                             <div class="custom-control custom-radio">
                                 <input type="radio" id="paypal" name="payment" class="custom-control-input">
-                                <label class="custom-control-label" for="paypal">PayPal</label>
+                                <label class="custom-control-label" for="paypal">PayPal / Carta di Credito</label>
                             </div>
                         </div>
 
                         <button class="btn btn-success btn-lg btn-block">
-                            Conferma ordine
+                            Concludi ordine
                         </button>
 
                     </div>
