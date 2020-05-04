@@ -91,7 +91,7 @@ class FattureInCloudAPI extends Controller
         );
 
         $fattura_nuova = $this->api(
-            'https://api.fattureincloud.it/v1/fatture/nuovo',
+            'fatture/nuovo',
             $request
         );
 
@@ -100,7 +100,7 @@ class FattureInCloudAPI extends Controller
         if ($fattura_nuova['success'] == 1) {
 
             $infomail = $this->api(
-                'https://api.fattureincloud.it/v1/fatture/infomail',
+                'fatture/infomail',
                 array(
                     'api_uid' => env('FIC_API_UID'),
                     'api_key' => env('FIC_API_KEY'),
@@ -109,7 +109,7 @@ class FattureInCloudAPI extends Controller
             );
 
             $fattura_inviamail = $this->api(
-                'https://api.fattureincloud.it/v1/fatture/inviamail',
+                'fatture/inviamail',
                 array(
                     'api_uid' => env('FIC_API_UID'),
                     'api_key' => env('FIC_API_KEY'),
@@ -139,6 +139,8 @@ class FattureInCloudAPI extends Controller
      */
     public function api($url, $request)
     {
+        $url = 'https://api.fattureincloud.it/v1/' . $url;
+
         $options = array(
             "http" => array(
                 "header"  => "Content-type: text/json\r\n",

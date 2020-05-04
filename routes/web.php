@@ -70,3 +70,6 @@ Route::get('/mail/service-expiration/{id}', 'Email@sendExpirationService')
 
 Route::get('/fattureincloud/create/{id}', 'FattureInCloudAPI@create')
      ->name('fattureincloud.api.create');
+
+Route::get('/payment/checkout/{id}', 'Payment@show')
+    ->name('payment.checkout');
