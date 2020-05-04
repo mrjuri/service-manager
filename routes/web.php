@@ -73,3 +73,5 @@ Route::get('/fattureincloud/create/{id}', 'FattureInCloudAPI@create')
 
 Route::get('/payment/checkout/{id}', 'Payment@show')
     ->name('payment.checkout');
+Route::post('/payment/confirm', 'Payment@confirm')
+     ->name('payment.confirm');

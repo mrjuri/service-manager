@@ -372,7 +372,9 @@
 
                 <br>
 
-                <form action="#" method="post">
+                <form action="{{ route('payment.confirm') }}" method="post">
+
+                    @csrf
 
                     <div class="card border-success">
                         <div class="card-header bg-success border-success text-white">
@@ -418,6 +420,7 @@
                         </div>
                     </div>
 
+                    <input type="hidden" name="id" value="{{ $customer_service->id }}">
                 </form>
 
                 <br>

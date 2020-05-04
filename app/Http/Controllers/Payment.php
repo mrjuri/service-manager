@@ -35,9 +35,17 @@ class Payment extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function confirm(Request $request)
     {
-        //
+        $id = $request->input('id');
+
+        $customer_service = CustomersServices::with('customer')
+                                             ->with('details')
+                                             ->find($id);
+
+        return view('payment.confirm', [
+            'customer_service' => $customer_service
+        ]);
     }
 
     /**
