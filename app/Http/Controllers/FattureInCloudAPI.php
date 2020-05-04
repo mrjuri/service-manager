@@ -9,6 +9,16 @@ use Illuminate\Http\Request;
 class FattureInCloudAPI extends Controller
 {
     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
+    /**
      * Creazione fattura e invio tramite email.
      *
      * @return \Illuminate\Http\Response
