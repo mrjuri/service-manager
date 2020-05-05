@@ -98,13 +98,14 @@ class Email extends Controller
             '[customers_services-name]' => $customer_service->name,
             '[customers_services-reference]' => $customer_service->reference,
             '[customers_services-expiration]' => date('d/m/Y', strtotime($customer_service->expiration)),
-            '[customers_services-expiration-banner]' => '
+            '[customers_services-expiration-banner_]' => '
                 <div class="date-exp-container">
                     <div class="date-exp">'. date('d-m-Y', strtotime($customer_service->expiration)) . '</div>
                     <div class="date-exp-msg">(data di scadenza e disattivazione dei servizi)</div>
                 </div>
             ',
             '[customers_services-total_]' => $price_sell_tot,
+            'http://[customers_services-link_]' => route('payment.checkout', $customer_service->id),
 
             '*|MC:SUBJECT|*' => '[' . $customer_service->reference . '] - ' . $customer_service->name . ' in scadenza',
             '*|MC_PREVIEW_TEXT|*' => date('d/m/Y', strtotime($customer_service->expiration)) . ' disattivazione ' . $customer_service->name . ' ' . $customer_service->reference,
