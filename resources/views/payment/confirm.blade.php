@@ -31,6 +31,20 @@
 
         <h2 class="text-center" style="font-size: 3.2em;">Grazie.</h2>
 
+        <br><br><br>
+
+        <div class="row">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-6 text-center">
+
+                <hr>
+
+                A breve riceverai un'email con tutti i dettagli relativi al pagamento.
+
+            </div>
+            <div class="col-lg-3"></div>
+        </div>
+
     </div>
 
 @endsection
