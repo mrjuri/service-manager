@@ -32,7 +32,7 @@ class Expiration extends Mailable
     public function build()
     {
         return $this->subject($this->subject)
-                    ->view('mail.service-expiration', [
+                    ->view('mail.expiration', [
                         'content' => $this->template
                     ]);
     }
