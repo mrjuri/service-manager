@@ -46,6 +46,7 @@
     <table class="table table-hover">
         <thead>
         <tr>
+            <th>Cod.</th>
             <th>Nome</th>
             <th class="text-center">Share</th>
             <th class="text-right">Entrate</th>
@@ -60,6 +61,9 @@
         @foreach($services as $service)
 
             <tr>
+                <td>
+                    {{ $service->fic_cod }}
+                </td>
                 <td class="align-middle">
 
                     {{ $service->name }}

@@ -17,6 +17,7 @@ class Services extends Migration
             $table->bigIncrements('id');
 
             $table->string('name');
+            $table->string('fic_cod');
             $table->string('name_customer_view');
             $table->float('price_buy');
             $table->float('price_sell');

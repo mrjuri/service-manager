@@ -50,6 +50,7 @@ class Service extends Controller
             ->select([
                 'services.id AS id',
                 'services.name AS name',
+                'services.fic_cod AS fic_cod',
                 'services.is_share AS is_share',
                 DB::raw('COUNT(customers_services_details.service_id) AS n_servizi_venduti'),
                 'services.price_buy AS price_buy',
@@ -112,6 +113,7 @@ class Service extends Controller
     {
         $service = new \App\Model\Service();
         $service->name = $request->input('name');
+        $service->fic_cod = $request->input('fic_cod');
         $service->name_customer_view = $request->input('name_customer_view');
         $service->price_buy = floatval(str_replace(',', '.', $request->input('price_buy')));
         $service->price_sell = floatval(str_replace(',', '.', $request->input('price_sell')));
@@ -282,6 +284,7 @@ class Service extends Controller
     {
         $service = \App\Model\Service::find($id);
         $service->name = $request->input('name');
+        $service->fic_cod = $request->input('fic_cod');
         $service->name_customer_view = $request->input('name_customer_view');
         $service->price_buy = floatval(str_replace(',', '.', $request->input('price_buy')));
         $service->price_sell = floatval(str_replace(',', '.', $request->input('price_sell')));

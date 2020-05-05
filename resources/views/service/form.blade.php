@@ -68,15 +68,35 @@
             </div>
         </div>
 
-        <div class="form-group">
-            <input type="text"
-                   class="form-control"
-                   aria-describedby="name_customer_view"
-                   placeholder="Nome servizio visualizzato dal cliente"
-                   name="name_customer_view"
-                   @if (isset($service->name_customer_view))
-                   value="{{ $service->name_customer_view }}"
-                @endif />
+        <div class="row">
+            <div class="col-lg-3">
+
+                <div class="form-group">
+                    <input type="text"
+                           class="form-control"
+                           aria-describedby="fic_cod"
+                           placeholder="Cod. (fatture in cloud)"
+                           name="fic_cod"
+                           @if (isset($service->fic_cod))
+                           value="{{ $service->fic_cod }}"
+                        @endif />
+                </div>
+
+            </div>
+            <div class="col-lg-9">
+
+                <div class="form-group">
+                    <input type="text"
+                           class="form-control"
+                           aria-describedby="name_customer_view"
+                           placeholder="Nome servizio visualizzato dal cliente"
+                           name="name_customer_view"
+                           @if (isset($service->name_customer_view))
+                           value="{{ $service->name_customer_view }}"
+                        @endif />
+                </div>
+
+            </div>
         </div>
 
         <div class="form-group form-check">
