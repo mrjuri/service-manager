@@ -17,7 +17,7 @@ class FattureInCloudAPI extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     /**
      * Creazione fattura e invio tramite email.
      *
@@ -25,7 +25,7 @@ class FattureInCloudAPI extends Controller
      */
     public function create($customer_service_id)
     {
-        /*$infoaccount = $this->api(
+        /*$info_account = $this->api(
             'info/account',
             array(
                 'api_uid' => env('FIC_API_UID'),
@@ -34,9 +34,20 @@ class FattureInCloudAPI extends Controller
                     "lista_metodi_pagamento"
                 ]
             )
-        );
+        );*/
 
-        dd($infoaccount);*/
+        /**
+         * Fatture in Cloud
+         * Recupero dati dei proditti
+         */
+        $prodotti_lista = $this->api(
+            'prodotti/lista',
+            array(
+                'api_uid' => env('FIC_API_UID'),
+                'api_key' => env('FIC_API_KEY'),
+                'cod' => ''
+            )
+        );
 
         /**
          * Recupero dati per la fattura
@@ -55,7 +66,31 @@ class FattureInCloudAPI extends Controller
 
             if (!isset($array_rows[$customer_service_detail->service->name_customer_view])) {
 
+                /**
+                 * Ricerca corrispondenza con l'ID del prodotto di Fatture in Cloud
+                 */
+                $fic_prodotto_id = 0;
+
+                foreach ($prodotti_lista['lista_prodotti'] as $fic_prodotto) {
+
+                    if ($fic_prodotto['cod'] == $customer_service_detail->service->fic_cod) {
+
+                        $fic_prodotto_id = $fic_prodotto['id'];
+                        $fic_prodotto_cod = $fic_prodotto['cod'];
+                        $fic_prodotto_categoria = $fic_prodotto['categoria'];
+                        break;
+
+                    }
+
+                }
+
+                /**
+                 * Array con i valori da inserire nella riga prodotto
+                 */
                 $array_rows[$customer_service_detail->service->name_customer_view] = array(
+                    'fic_id' => $fic_prodotto_id,
+                    'fic_cod' => $fic_prodotto_cod,
+                    'fic_categoria' => $fic_prodotto_categoria,
                     'price_sell' => $customer_service_detail->price_sell,
                     'reference' => array()
                 );
@@ -66,6 +101,7 @@ class FattureInCloudAPI extends Controller
         }
 
         /**
+         * Fatture in Cloud
          * Creazione prodotti per la nuova fattura
          */
         $lista_articoli = array();
@@ -76,8 +112,9 @@ class FattureInCloudAPI extends Controller
             $desc = implode("\n", $a_unique);
 
             $lista_articoli[] = array(
-                'id' => '0',
-                'codice' => '',
+                'id' => $a['fic_id'],
+                'codice' => $a['fic_cod'],
+                'categoria' => $a['fic_categoria'],
                 'nome' => $k,
                 'descrizione' => $desc,
                 'quantita' => count($a['reference']),
@@ -88,6 +125,7 @@ class FattureInCloudAPI extends Controller
         }
 
         /**
+         * Fatture in Cloud
          * Creazione nuova fattura
          */
         $request = array(
@@ -120,6 +158,10 @@ class FattureInCloudAPI extends Controller
 
         if ($fattura_nuova['success'] == 1) {
 
+            /**
+             * Fatture in Cloud
+             * Recupero dati documento appena creato
+             */
             $infomail = $this->api(
                 'fatture/infomail',
                 array(
@@ -129,6 +171,10 @@ class FattureInCloudAPI extends Controller
                 )
             );
 
+            /**
+             * Fatture in Cloud
+             * Invio il documento via email al cliente
+             */
             $fattura_inviamail = $this->api(
                 'fatture/inviamail',
                 array(
