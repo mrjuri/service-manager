@@ -73,19 +73,23 @@
                 @endif
             </td>
             <td class="btn-row" data-toggle="collapse" data-target="#details-{{ $customersService->id }}">
-                {{ $customersService->customer->company }}
+                @if($customersService->company)
+                    {{ Str::limit($customersService->company, 35, '...') }}
+                @else
+                    {{ Str::limit($customersService->customer->company, 35, '...') }}
+                @endif
                 <br />
                 <small>
-                    @if($customersService->company)
-                    {{ $customersService->company }}
+                    @if($customersService->customer_name)
+                        {{ $customersService->customer_name }}
                     @else
-                    {{ $customersService->customer->company }}
+                        {{ $customersService->customer->name }}
                     @endif
                     -
-                    @if($customersService->customer_name)
-                    {{ $customersService->customer_name }}
+                    @if($customersService->email)
+                        {{ $customersService->email }}
                     @else
-                    {{ $customersService->customer->name }}
+                        {{ $customersService->customer->email }}
                     @endif
                 </small>
             </td>
