@@ -56,6 +56,7 @@
                     <br>
                     <strong>
                         {{ date('d/m/Y', strtotime($payment->payment_date)) }}
+                        {{ date('h:i', strtotime($payment->payment_date)) }}
                     </strong>
                     <br><br>
 
