@@ -105,7 +105,7 @@ class Email extends Controller
                 </div>
             ',
             '[customers_services-total_]' => $price_sell_tot,
-            
+
             'http://[customers_services-link_]' => '[customers_services-link_]',
             'https://[customers_services-link_]' => '[customers_services-link_]',
             '[customers_services-link_]' => route('payment.checkout', $customer_service->id),
@@ -180,69 +180,6 @@ class Email extends Controller
             $html = str_replace($k, $v, $html);
 
         }
-
-        /*
-        $customers_services_details = CustomersServicesDetails::with('service')
-                                                              ->where('customer_id', $customer_service->customer->id)
-                                                              ->where('customer_service_id', $customer_service_id)
-                                                              ->orderBy('price_sell', 'DESC')
-                                                              ->orderBy('reference', 'ASC')
-                                                              ->get();
-
-        foreach ($customers_services_details as $customer_service_detail) {
-
-            if (!isset($array_rows[$customer_service_detail->service->name_customer_view]))
-                $array_rows[$customer_service_detail->service->name_customer_view] = array();
-
-            $array_rows[$customer_service_detail->service->name_customer_view][] = array(
-                'reference' => $customer_service_detail->reference,
-                'price_sell' => $customer_service_detail->price_sell,
-            );
-
-        }
-
-        $price_sell_tot = 0;
-        $customers_services_list_ = '
-        <div class="title-service-details">
-            Gli elementi che compongono il servizio ' . $customer_service->name . ' per ' . $customer_service->reference . '
-        </div>';
-        $customers_services_list_ .= '<div class="tbl-container">';
-
-        foreach ($array_rows as $k => $a) {
-
-            $customers_services_list_ .= '
-            <table width="100%" class="tbl-details">
-                <tr>
-                    <th colspan="2">' . $k . '</th>
-                </tr>
-            ';
-
-            foreach ($a as $v) {
-
-                $customers_services_list_ .= '
-                    <tr>
-                        <td>' . $v['reference'] . '</td>
-                        <td align="right">&euro; ' . number_format($v['price_sell'], 2, ',', '.') . '</td>
-                    </tr>
-                ';
-
-                $price_sell_tot += $v['price_sell'];
-
-            }
-
-            $customers_services_list_ .= '
-            </table>
-            ';
-
-        }
-
-        $customers_services_list_ .= '</div>';
-
-        $price_sell_tot = $price_sell_tot * 1.22;
-        $price_sell_tot = '&euro; ' . number_format($price_sell_tot, 2, ',', '.');
-
-        $html = str_replace('[customers_services-list_]', $customers_services_list_, $html);
-        */
 
         return $html;
     }
