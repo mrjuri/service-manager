@@ -37,6 +37,9 @@ class Email extends Controller
 
     public function sendExpiration($id)
     {
+        $payment = new Payment();
+        $payment->sid_create($id);
+
         $html = Storage::disk('public')->get('mail_template/expiration.html');
         $content = $this->get_template($html, $id);
         $data_array = $this->get_data($id);
@@ -81,11 +84,15 @@ class Email extends Controller
      *
      * @return array
      */
-    public function get_data_str_replace($customer_service_id)
+    public function get_data_template_replace($customer_service_id)
     {
         $customer_service = CustomersServices::with('customer')
                                              ->with('details')
                                              ->find($customer_service_id);
+
+        $payment = \App\Model\Payment::where('customer_service_id', $customer_service_id)
+                                     ->where('customer_service_expiration', $customer_service->expiration)
+                                     ->first();
 
         $price_sell_tot = 0;
         foreach ($customer_service->details as $detail) {
@@ -108,7 +115,8 @@ class Email extends Controller
 
             'http://[customers_services-link_]' => '[customers_services-link_]',
             'https://[customers_services-link_]' => '[customers_services-link_]',
-            '[customers_services-link_]' => route('payment.checkout', $customer_service->id),
+//            '[customers_services-link_]' => route('payment.checkout', $customer_service->id),
+            '[customers_services-link_]' => route('payment.checkout', $payment->sid),
 
             '*|MC:SUBJECT|*' => '[' . $customer_service->reference . '] - ' . $customer_service->name . ' in scadenza',
             '*|MC_PREVIEW_TEXT|*' => date('d/m/Y', strtotime($customer_service->expiration)) . ' disattivazione ' . $customer_service->name . ' ' . $customer_service->reference,
@@ -127,7 +135,7 @@ class Email extends Controller
      */
     public function get_template($html, $customer_service_id)
     {
-        $str_replace_array = $this->get_data_str_replace($customer_service_id);
+        $str_replace_array = $this->get_data_template_replace($customer_service_id);
 
         $style_custom = '
             <style>

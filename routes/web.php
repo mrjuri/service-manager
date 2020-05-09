@@ -71,7 +71,9 @@ Route::get('/mail/service-expiration/{id}', 'Email@sendExpirationService')
 Route::get('/fattureincloud/create/{id}', 'FattureInCloudAPI@create')
      ->name('fattureincloud.api.create');
 
-Route::get('/payment/checkout/{id}', 'Payment@show')
-    ->name('payment.checkout');
-Route::post('/payment/confirm', 'Payment@confirm')
+Route::get('/payment/checkout/{sid}', 'Payment@show')
+     ->name('payment.checkout');
+Route::post('/payment/checkout/update/{sid}', 'Payment@update')
+     ->name('payment.update');
+Route::get('/payment/confirm/{sid}', 'Payment@confirm')
      ->name('payment.confirm');

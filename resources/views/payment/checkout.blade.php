@@ -372,7 +372,7 @@
 
                 <br>
 
-                <form action="{{ route('payment.confirm') }}" method="post">
+                <form action="{{ route('payment.update', $payment->sid) }}" method="post">
 
                     @csrf
 
@@ -386,7 +386,12 @@
 
                             <div class="alert text-secondary">
                                 <div class="custom-control custom-radio">
-                                    <input type="radio" id="bonifico" name="payment" class="custom-control-input" checked>
+                                    <input type="radio"
+                                           class="custom-control-input"
+                                           id="bonifico"
+                                           name="payment"
+                                           value="bonifico"
+                                           checked>
                                     <label class="custom-control-label" for="bonifico">Bonifico</label>
                                 </div>
                             </div>
@@ -420,7 +425,7 @@
                         </div>
                     </div>
 
-                    <input type="hidden" name="id" value="{{ $customer_service->id }}">
+                    <input type="hidden" name="sid" value="{{ $payment->sid }}">
                 </form>
 
                 <br>

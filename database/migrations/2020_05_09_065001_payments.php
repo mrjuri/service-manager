@@ -18,7 +18,7 @@ class Payments extends Migration
 
             $table->char('sid');
             $table->integer('customer_service_id');
-            $table->timestamp('customer_service_expiration');
+            $table->timestamp('customer_service_expiration')->nullable();
             $table->char('type');
             $table->timestamp('payment_date');
             $table->float('amount');
