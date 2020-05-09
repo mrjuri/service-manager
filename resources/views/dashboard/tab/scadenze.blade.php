@@ -62,7 +62,11 @@
                         </div>
                         <div class="col-lg-4">
                             <button type="button"
-                                    class="btn btn-block btn-sm btn-modal {{ $btnClassName }}"
+                                    class="btn btn-block btn-sm btn-modal @if($customersService->payment_type)
+                                    btn-success
+                                    @else
+                                    {{ $btnClassName }}
+                                    @endif"
                                     data-toggle="modal"
                                     data-target="#invoiceModal"
                                     data-href="{{ route('fattureincloud.api.create', $customersService->id) }}">

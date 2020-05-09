@@ -75,10 +75,27 @@ class Dashboard extends Controller
                 'services',
                 'services.id', '=', 'customers_services_details.service_id'
             )
-            ->*/with([
+            ->*/select([
+                'customers_services.id AS id',
+                'customers_services.customer_id AS customer_id',
+                'customers_services.piva AS piva',
+                'customers_services.company AS company',
+                'customers_services.email AS email',
+                'customers_services.customer_name AS customer_name',
+                'customers_services.name AS name',
+                'customers_services.reference AS reference',
+                'customers_services.expiration AS expiration',
+                'payments.type AS payment_type',
+            ])
+            ->leftJoin('payments', function($join) {
+                $join->on('payments.customer_service_id', '=', 'customers_services.id');
+                $join->on('payments.customer_service_expiration', '=', 'customers_services.expiration');
+            })
+            ->with([
                 'customer',
                 'details',
-                'details.service'
+                'details.service',
+//                'payment'
             ])
             ->orWhereHas('customer', function ($q) use ($s_array) {
 
@@ -122,7 +139,7 @@ class Dashboard extends Controller
             ->orderBy('expiration')
             ->get();
 
-//        dd($customersServices[0]->details[0]);
+//        dd($customersServices);
 
         /*$customersServicesDetails = CustomersServicesDetails::with('service')
             ->get();*/
