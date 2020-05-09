@@ -105,7 +105,10 @@ class Email extends Controller
                 </div>
             ',
             '[customers_services-total_]' => $price_sell_tot,
-            'http://[customers_services-link_]' => route('payment.checkout', $customer_service->id),
+            
+            'http://[customers_services-link_]' => '[customers_services-link_]',
+            'https://[customers_services-link_]' => '[customers_services-link_]',
+            '[customers_services-link_]' => route('payment.checkout', $customer_service->id),
 
             '*|MC:SUBJECT|*' => '[' . $customer_service->reference . '] - ' . $customer_service->name . ' in scadenza',
             '*|MC_PREVIEW_TEXT|*' => date('d/m/Y', strtotime($customer_service->expiration)) . ' disattivazione ' . $customer_service->name . ' ' . $customer_service->reference,
