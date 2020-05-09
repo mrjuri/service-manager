@@ -45,6 +45,7 @@ class Email extends Controller
         $data_array = $this->get_data($id);
 
         Mail::to($data_array['to'])
+            ->bcc(env('MAIL_BCC_ADDRESS'))
             ->send(new Expiration(
                 $data_array['subject'],
                 $content
