@@ -35,6 +35,23 @@
         .table tbody .text-right {
             white-space: nowrap;
         }
+        .date-exp-container {
+            border: 4px dashed #f00;
+            padding: 15px 0 15px 0;
+            text-align: center;
+            border-radius: 8px;
+            margin: 30px 0 0 0;
+        }
+        .date-exp {
+            font-size: 3em;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .date-exp-msg {
+            font-size: .75em;
+            white-space: nowrap;
+            margin-bottom: 10px;
+        }
 
     </style>
 
@@ -113,7 +130,20 @@
             Il rinnovo è relativo al servizio <strong>{{ $customer_service->name }}</strong>  di <strong>{{ $customer_service->reference }}</strong>
         </div>
 
-        <br>
+        <div class="row">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-6">
+
+                <div class="date-exp-container">
+                    <div class="date-exp">{{ date('d-m-Y', strtotime($customer_service->expiration)) }}</div>
+                    <div class="date-exp-msg">(data di scadenza e disattivazione dei servizi)</div>
+                </div>
+
+            </div>
+            <div class="col-lg-3"></div>
+        </div>
+
+        <br><br>
 
         <div class="row">
             <div class="col-lg-7">
