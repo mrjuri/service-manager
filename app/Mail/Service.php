@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class Expiration extends Mailable
+class Service extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -32,7 +32,7 @@ class Expiration extends Mailable
     public function build()
     {
         return $this->subject($this->subject)
-                    ->view('mail.expiration', [
+                    ->view('mail.service-msg', [
                         'content' => $this->template
                     ]);
     }

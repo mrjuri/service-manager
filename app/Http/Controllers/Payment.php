@@ -134,9 +134,6 @@ class Payment extends Controller
 
         }
 
-        $email = new Email();
-        $email->sendConfirmService($sid);
-
         return view('payment.confirm', [
             'payment' => $payment,
             'service' => json_decode($payment->services),
@@ -183,6 +180,9 @@ class Payment extends Controller
         $payment->amount = $amount;
         $payment->services = \GuzzleHttp\json_encode($customer_service);
         $payment->save();
+
+        $email = new Email();
+        $email->sendConfirmService($sid);
 
         return redirect()->route('payment.confirm', $sid);
     }

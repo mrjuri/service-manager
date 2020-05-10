@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\Expiration;
+use App\Mail\Service;
 use App\Model\CustomersServices;
 use App\Model\CustomersServicesDetails;
 use Illuminate\Http\Request;
@@ -19,7 +19,7 @@ class Email extends Controller
     public function index($id)
     {
         $html = Storage::disk('public')->get('mail_template/expiration.html');
-        $content = $this->get_template($html, $id);
+        $content = $this->get_template($id, '', $html);
 
 //        $this->sendExpiration($id);
 
@@ -35,18 +35,30 @@ class Email extends Controller
         ]);*/
     }
 
+    public function show($view, $sid)
+    {
+        $payment = \App\Model\Payment::firstWhere('sid', $sid);
+
+        $html = Storage::disk('public')->get('mail_template/' . $view . '.html');
+        $content = $this->get_template($payment->customer_service_id, $view, $html);
+
+        return view('mail.service-msg', [
+            'content' => $content
+        ]);
+    }
+
     public function sendExpiration($id)
     {
         $payment = new Payment();
         $payment->sid_create($id);
 
         $html = Storage::disk('public')->get('mail_template/expiration.html');
-        $content = $this->get_template($html, $id);
+        $content = $this->get_template($id, 'expiration', $html);
         $data_array = $this->get_data($id);
 
         Mail::to($data_array['to'])
             ->bcc(env('MAIL_BCC_ADDRESS'))
-            ->send(new Expiration(
+            ->send(new Service(
                 $data_array['subject_expiration'],
                 $content
             ));
@@ -64,12 +76,12 @@ class Email extends Controller
         $payment = \App\Model\Payment::firstWhere('sid', $sid);
 
         $html = Storage::disk('public')->get('mail_template/confirm-' . $payment->type . '.html');
-        $content = $this->get_template($html, $payment->customer_service_id);
+        $content = $this->get_template($payment->customer_service_id, 'confirm-' . $payment->type, $html);
         $data_array = $this->get_data($payment->customer_service_id);
 
         Mail::to($data_array['to'])
             ->bcc(env('MAIL_BCC_ADDRESS'))
-            ->send(new Expiration(
+            ->send(new Service(
                 $data_array['subject_confirm_' . $payment->type],
                 $content
             ));
@@ -118,7 +130,7 @@ class Email extends Controller
      *
      * @return array
      */
-    public function get_data_template_replace($customer_service_id)
+    public function get_data_template_replace($customer_service_id, $view)
     {
         $customer_service = CustomersServices::with('customer')
                                              ->with('details')
@@ -149,8 +161,11 @@ class Email extends Controller
 
             'http://[customers_services-link_]' => '[customers_services-link_]',
             'https://[customers_services-link_]' => '[customers_services-link_]',
-//            '[customers_services-link_]' => route('payment.checkout', $customer_service->id),
             '[customers_services-link_]' => route('payment.checkout', $payment->sid),
+
+            'http://[email-link_]' => '[email-link_]',
+            'https://[email-link_]' => '[email-link_]',
+            '[email-link_]' => route('email.show', [$view, $payment->sid]),
 
             '*|MC:SUBJECT|*' => '[' . $customer_service->reference . '] - ' . $customer_service->name . ' in scadenza',
             '*|MC_PREVIEW_TEXT|*' => date('d/m/Y', strtotime($customer_service->expiration)) . ' disattivazione ' . $customer_service->name . ' ' . $customer_service->reference,
@@ -162,14 +177,15 @@ class Email extends Controller
     /**
      * Creazione template da inviare via email e visualizzare online
      *
-     * @param $html
      * @param $customer_service_id
+     * @param $view
+     * @param $html
      *
      * @return string|string[]
      */
-    public function get_template($html, $customer_service_id)
+    public function get_template($customer_service_id, $view, $html)
     {
-        $str_replace_array = $this->get_data_template_replace($customer_service_id);
+        $str_replace_array = $this->get_data_template_replace($customer_service_id, $view);
 
         $style_custom = '
             <style>
