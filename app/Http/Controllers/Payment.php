@@ -134,6 +134,9 @@ class Payment extends Controller
 
         }
 
+        $email = new Email();
+        $email->sendConfirmService($sid);
+
         return view('payment.confirm', [
             'payment' => $payment,
             'service' => json_decode($payment->services),

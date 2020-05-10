@@ -422,7 +422,7 @@
                                            name="payment"
                                            value="bonifico"
                                            checked>
-                                    <label class="custom-control-label" for="bonifico">Bonifico</label>
+                                    <label class="custom-control-label" for="bonifico">Bonifico bancario</label>
                                 </div>
                             </div>
 

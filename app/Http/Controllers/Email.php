@@ -47,7 +47,7 @@ class Email extends Controller
         Mail::to($data_array['to'])
             ->bcc(env('MAIL_BCC_ADDRESS'))
             ->send(new Expiration(
-                $data_array['subject'],
+                $data_array['subject_expiration'],
                 $content
             ));
     }
@@ -58,6 +58,38 @@ class Email extends Controller
 
         return redirect()->route('home');
     }
+
+    public function sendConfirmService($sid)
+    {
+        $payment = \App\Model\Payment::firstWhere('sid', $sid);
+
+        $html = Storage::disk('public')->get('mail_template/confirm-' . $payment->type . '.html');
+        $content = $this->get_template($html, $payment->customer_service_id);
+        $data_array = $this->get_data($payment->customer_service_id);
+
+        Mail::to($data_array['to'])
+            ->bcc(env('MAIL_BCC_ADDRESS'))
+            ->send(new Expiration(
+                $data_array['subject_confirm_' . $payment->type],
+                $content
+            ));
+    }
+
+    /*public function sendConfirmPayment($sid)
+    {
+        $payment = \App\Model\Payment::firstWhere('sid', $sid);
+
+        $html = Storage::disk('public')->get('mail_template/confirm-' . $payment->type . '.html');
+        $content = $this->get_template($html, $payment->customer_service_id);
+        $data_array = $this->get_data($payment->customer_service_id);
+
+        Mail::to($data_array['to'])
+            ->bcc(env('MAIL_BCC_ADDRESS'))
+            ->send(new Expiration(
+                $data_array['subject_confirm'],
+                $content
+            ));
+    }*/
 
     public function sendExpirationList()
     {
@@ -72,7 +104,8 @@ class Email extends Controller
 
         $array = array(
             'to' => $customer_service->email ? $customer_service->email : $customer_service->customer->email,
-            'subject' => '[' . $customer_service->reference . '] - ' . $customer_service->name . ' in scadenza',
+            'subject_expiration' => '[' . $customer_service->reference . '] - ' . $customer_service->name . ' in scadenza',
+            'subject_confirm_bonifico' => '[' . $customer_service->reference . '] - Richiesta bonifico bancario ' . $customer_service->name,
         );
 
         return $array;
