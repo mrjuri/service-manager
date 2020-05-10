@@ -152,6 +152,13 @@
                     </table>
 
                 </div>
+                <div class="col-lg-6">
+
+                    @if($payment->type == 'bonifico')
+                        {!! $payment_info !!}
+                    @endif
+
+                </div>
             </div>
 
         </div>

@@ -134,10 +134,21 @@ class Payment extends Controller
 
         }
 
+        $email = new Email();
+        $str_replace_array = $email->get_data_template_replace($payment->customer_service_id, '');
+        $payment_info = Storage::disk('public')->get('payment/' . $payment->type . '.html');
+
+        foreach ($str_replace_array as $k => $v) {
+
+            $payment_info = str_replace($k, $v, $payment_info);
+
+        }
+
         return view('payment.confirm', [
             'payment' => $payment,
             'service' => json_decode($payment->services),
             'array_services_rows' => $array_services_rows,
+            'payment_info' => $payment_info
         ]);
     }
 
