@@ -69,7 +69,11 @@
 
             <tr class="{{ $k < 3 ? 'alert-warning' : '' }}">
                 <td class="align-middle">
-                    {{ $customer->company }} {{ $k < 3 ? '⭐️' : '' }}
+                    {{ $customer->company }}
+                    {{ $k == 0 ? '🥇️' : '' }}
+                    {{ $k == 1 ? '🥈️' : '' }}
+                    {{ $k == 2 ? '🥉' : '' }}
+                    {{ $k == 3 ? '🎗' : '' }}
                     <br />
                     <small>
                         {{ $customer->name }} - {{ $customer->email }}
