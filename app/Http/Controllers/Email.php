@@ -147,9 +147,23 @@ class Email extends Controller
         $data_array = $this->get_data($payment->customer_service_id);
     }
 
+    /**
+     * Invio multiplo degli avvisi per la scadenza dei servizi.
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     public function sendExpirationList()
     {
+        $customers_services = CustomersServices::where('expiration', '>', date('YmdHis'))
+                                               ->where('expiration', '<', date('YmdHis', strtotime('+2 month')))
+                                               ->orderBy('expiration', 'ASC')
+                                               ->get();
 
+        foreach ($customers_services as $customer_service) {
+
+            $this->sendExpiration($customer_service->id);
+
+        }
     }
 
     /**
