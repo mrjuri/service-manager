@@ -6,6 +6,10 @@
             $(this).find('.btn-confirm').attr('href', $(e.relatedTarget).data('href'));
         });
 
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+
     };
 
 </script>
@@ -91,9 +95,24 @@
                     @endif
                     -
                     @if($customersService->email)
-                        {{ $customersService->email }}
+                        @php($email_array = explode(';', $customersService->email))
                     @else
-                        {{ $customersService->customer->email }}
+                        @php($email_array = explode(';', $customersService->customer->email))
+                    @endif
+
+                    {{ $email_array[0] }}
+
+                    @if(count($email_array) > 1)
+                        <span class="badge badge-primary"
+                              data-toggle="tooltip"
+                              data-html="true"
+                              title="@foreach($email_array as $k => $email)
+                              @if($k > 0)
+                              {{ $email }}<br>
+                              @endif
+                              @endforeach">
+                            cc
+                        </span>
                     @endif
                 </small>
             </td>

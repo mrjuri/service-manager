@@ -110,7 +110,7 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="{{ asset('node_modules/popper.js/dist/popper.min.js') }}" crossorigin="anonymous"></script>
+    <script src="{{ asset('node_modules/popper.js/dist/umd/popper.min.js') }}" crossorigin="anonymous"></script>
     <script src="{{ asset('node_modules/bootstrap/dist/js/bootstrap.min.js') }}" crossorigin="anonymous"></script>
 
 </body>

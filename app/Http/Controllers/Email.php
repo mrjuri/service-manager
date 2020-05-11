@@ -18,23 +18,18 @@ class Email extends Controller
      */
     public function index($id)
     {
-        $html = Storage::disk('public')->get('mail_template/expiration.html');
-        $content = $this->get_template($id, '', $html);
 
-//        $this->sendExpiration($id);
-
-        return view('mail.expiration', [
-            'content' => $content
-        ]);
-
-        /*$settings = \App\Model\Setting::where('name', 'email_body')->get();
-        $template = $this->template($settings[0]->value, $customer_id, $customer_service_id);
-
-        return view('mail.service-expiration', [
-            'content' => $template
-        ]);*/
     }
 
+    /**
+     * Mostra la mail tramite browser.
+     *
+     * @param $view
+     * @param $sid
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     public function show($view, $sid)
     {
         $payment = \App\Model\Payment::firstWhere('sid', $sid);
@@ -47,6 +42,18 @@ class Email extends Controller
         ]);
     }
 
+    /**
+     * Invio email di avviso per la scadenza del servizio.
+     * Vengono inviate email CC nel caso siano presenti.
+     *
+     * Il redirect non è presente, perché questo modulo può essere
+     * richiamato per inviare le mail alla lista dei clienti con servizio
+     * in scadenza.
+     *
+     * @param $id
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     public function sendExpiration($id)
     {
         $payment = new Payment();
@@ -56,7 +63,17 @@ class Email extends Controller
         $content = $this->get_template($id, 'expiration', $html);
         $data_array = $this->get_data($id);
 
-        $mail = Mail::to($data_array['to']);
+        $email_array = explode(';', $data_array['to']);
+
+        $mail = Mail::to($email_array[0]);
+
+        if (count($email_array) > 0) {
+
+            foreach ($email_array as $k => $email) {
+                $mail->cc($email);
+            }
+
+        }
 
         if (env('MAIL_BCC_ADDRESS')) {
             $mail->bcc(env('MAIL_BCC_ADDRESS'));
@@ -68,6 +85,14 @@ class Email extends Controller
         ));
     }
 
+    /**
+     * Invio email con redirect.
+     *
+     * @param $id
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     public function sendExpirationService($id)
     {
         $this->sendExpiration($id);
@@ -75,6 +100,12 @@ class Email extends Controller
         return redirect()->route('home');
     }
 
+    /**
+     * Dopo aver confermato il rinnovo, viene inviata questa email di conferma.
+     * @param $sid
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     public function sendConfirmService($sid)
     {
         $payment = \App\Model\Payment::firstWhere('sid', $sid);
@@ -83,7 +114,9 @@ class Email extends Controller
         $content = $this->get_template($payment->customer_service_id, 'confirm-' . $payment->type, $html);
         $data_array = $this->get_data($payment->customer_service_id);
 
-        $mail = Mail::to($data_array['to']);
+        $email_array = explode(';', $data_array['to']);
+
+        $mail = Mail::to($email_array[0]);
 
         if (env('MAIL_BCC_ADDRESS')) {
             $mail->bcc(env('MAIL_BCC_ADDRESS'));
@@ -95,6 +128,16 @@ class Email extends Controller
         ));
     }
 
+    /**
+     * Invio email di avvenuto pagamento.
+     *
+     * Ancora da collegare, perché l'email della fattura viene inviata con FattureinCloud
+     * e non vorrei diventasse una comunicazione rindondante.
+     *
+     * @param $sid
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     public function sendConfirmPayment($sid)
     {
         $payment = \App\Model\Payment::firstWhere('sid', $sid);
@@ -109,6 +152,13 @@ class Email extends Controller
 
     }
 
+    /**
+     * Prendo i dati per popolare la mail da inviare.
+     *
+     * @param $customer_service_id
+     *
+     * @return array
+     */
     public function get_data($customer_service_id)
     {
         $customer_service = CustomersServices::with('customer')
