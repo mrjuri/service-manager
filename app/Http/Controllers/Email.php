@@ -56,12 +56,16 @@ class Email extends Controller
         $content = $this->get_template($id, 'expiration', $html);
         $data_array = $this->get_data($id);
 
-        Mail::to($data_array['to'])
-            ->bcc(env('MAIL_BCC_ADDRESS'))
-            ->send(new Service(
-                $data_array['subject_expiration'],
-                $content
-            ));
+        $mail = Mail::to($data_array['to']);
+
+        if (env('MAIL_BCC_ADDRESS')) {
+            $mail->bcc(env('MAIL_BCC_ADDRESS'));
+        }
+
+        $mail->send(new Service(
+            $data_array['subject_expiration'],
+            $content
+        ));
     }
 
     public function sendExpirationService($id)
@@ -79,29 +83,26 @@ class Email extends Controller
         $content = $this->get_template($payment->customer_service_id, 'confirm-' . $payment->type, $html);
         $data_array = $this->get_data($payment->customer_service_id);
 
-        Mail::to($data_array['to'])
-            ->bcc(env('MAIL_BCC_ADDRESS'))
-            ->send(new Service(
-                $data_array['subject_confirm_' . $payment->type],
-                $content
-            ));
+        $mail = Mail::to($data_array['to']);
+
+        if (env('MAIL_BCC_ADDRESS')) {
+            $mail->bcc(env('MAIL_BCC_ADDRESS'));
+        }
+
+        $mail->send(new Service(
+            $data_array['subject_confirm_' . $payment->type],
+            $content
+        ));
     }
 
-    /*public function sendConfirmPayment($sid)
+    public function sendConfirmPayment($sid)
     {
         $payment = \App\Model\Payment::firstWhere('sid', $sid);
 
         $html = Storage::disk('public')->get('mail_template/confirm-' . $payment->type . '.html');
         $content = $this->get_template($html, $payment->customer_service_id);
         $data_array = $this->get_data($payment->customer_service_id);
-
-        Mail::to($data_array['to'])
-            ->bcc(env('MAIL_BCC_ADDRESS'))
-            ->send(new Expiration(
-                $data_array['subject_confirm'],
-                $content
-            ));
-    }*/
+    }
 
     public function sendExpirationList()
     {
