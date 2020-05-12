@@ -70,7 +70,9 @@ class Email extends Controller
         if (count($email_array) > 0) {
 
             foreach ($email_array as $k => $email) {
-                $mail->cc($email);
+                if ($k > 0) {
+                    $mail->cc($email);
+                }
             }
 
         }
