@@ -38,18 +38,18 @@ class Dashboard extends Controller
                 'customers.id', '=', 'customers_services_details.customer_id')
             ->select([
                 'services.name AS name',
-                DB::raw('COUNT(customers_services_details.service_id) AS customers_n'),
+                DB::raw('COUNT(' . $this->db_prefix . 'customers_services_details.service_id) AS customers_n'),
                 DB::raw('IF(
-                    services.is_share = 1,
-                    services.price_buy,
-                    services.price_buy * COUNT(customers_services_details.service_id)
+                    ' . $this->db_prefix . 'services.is_share = 1,
+                    ' . $this->db_prefix . 'services.price_buy,
+                    ' . $this->db_prefix . 'services.price_buy * COUNT(' . $this->db_prefix . 'customers_services_details.service_id)
                 ) AS price_buy'),
-                DB::raw('SUM(customers_services_details.price_sell) AS price_sell'),
+                DB::raw('SUM(' . $this->db_prefix . 'customers_services_details.price_sell) AS price_sell'),
                 DB::raw('IF(
-                    services.is_share = 1,
-                    SUM(customers_services_details.price_sell) - services.price_buy,
-                    SUM(customers_services_details.price_sell) - (
-                        services.price_buy * COUNT(customers_services_details.service_id)
+                    ' . $this->db_prefix . 'services.is_share = 1,
+                    SUM(' . $this->db_prefix . 'customers_services_details.price_sell) - ' . $this->db_prefix . 'services.price_buy,
+                    SUM(' . $this->db_prefix . 'customers_services_details.price_sell) - (
+                        ' . $this->db_prefix . 'services.price_buy * COUNT(' . $this->db_prefix . 'customers_services_details.service_id)
                     )
                 ) AS price_utile'),
             ])
@@ -213,7 +213,7 @@ class Dashboard extends Controller
                 'customers.id AS id',
                 'customers.name AS name',
                 'customers.company AS company',
-                DB::raw('SUM(customers_services_details.price_sell) AS price_sell')
+                DB::raw('SUM(' . $this->db_prefix . 'customers_services_details.price_sell) AS price_sell')
             ])
             ->where('price_sell', '>', 0)
             ->groupBy('customers.id')

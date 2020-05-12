@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 
 class Customer extends Controller
 {
+    protected $db_prefix;
+
     /**
      * Create a new controller instance.
      *
@@ -19,6 +21,8 @@ class Customer extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+
+        $this->db_prefix = env('DB_PREFIX');
     }
 
     /**
@@ -59,50 +63,50 @@ class Customer extends Controller
                 'c.company AS company',
                 'c.name AS name',
                 'c.email AS email',
-                DB::raw('SUM(csd_c.price_sell) AS price_sell'),
+                DB::raw('SUM(' . $this->db_prefix . 'csd_c.price_sell) AS price_sell'),
                 DB::raw('SUM(IF(
-                        s.is_share = 1,
-                        s.price_buy / (
-                            SELECT COUNT(id) AS count FROM customers_services_details
-                                WHERE service_id = s.id
-                                GROUP BY s.id
+                        ' . $this->db_prefix . 's.is_share = 1,
+                        ' . $this->db_prefix . 's.price_buy / (
+                            SELECT COUNT(id) AS count FROM ' . $this->db_prefix . 'customers_services_details
+                                WHERE service_id = ' . $this->db_prefix . 's.id
+                                GROUP BY ' . $this->db_prefix . 's.id
                         ),
-                        s.price_buy
+                        ' . $this->db_prefix . 's.price_buy
                     )) AS price_buy'),
-                DB::raw('(SUM(csd_c.price_sell) - SUM(IF(
-                        s.is_share = 1,
-                        s.price_buy / (
-                            SELECT COUNT(id) AS count FROM customers_services_details
-                                WHERE service_id = s.id
-                                GROUP BY s.id
+                DB::raw('(SUM(' . $this->db_prefix . 'csd_c.price_sell) - SUM(IF(
+                        ' . $this->db_prefix . 's.is_share = 1,
+                        ' . $this->db_prefix . 's.price_buy / (
+                            SELECT COUNT(id) AS count FROM ' . $this->db_prefix . 'customers_services_details
+                                WHERE service_id = ' . $this->db_prefix . 's.id
+                                GROUP BY ' . $this->db_prefix . 's.id
                         ),
-                        s.price_buy
+                        ' . $this->db_prefix . 's.price_buy
                     ))) AS price_utile'),
-                DB::raw('(SUM(csd_c.price_sell) - SUM(IF(
-                        s.is_share = 1,
-                        s.price_buy / (
-                            SELECT COUNT(id) AS count FROM customers_services_details
-                                WHERE service_id = s.id
-                                GROUP BY s.id
+                DB::raw('(SUM(' . $this->db_prefix . 'csd_c.price_sell) - SUM(IF(
+                        ' . $this->db_prefix . 's.is_share = 1,
+                        ' . $this->db_prefix . 's.price_buy / (
+                            SELECT COUNT(id) AS count FROM ' . $this->db_prefix . 'customers_services_details
+                                WHERE service_id = ' . $this->db_prefix . 's.id
+                                GROUP BY ' . $this->db_prefix . 's.id
                         ),
-                        s.price_buy
+                        ' . $this->db_prefix . 's.price_buy
                     ))) / (' . $totals['price_utile'] . ') * 100 AS per'),
-                DB::raw('((SUM(csd_c.price_sell) - SUM(IF(
-                        s.is_share = 1,
-                        s.price_buy / (
-                            SELECT COUNT(id) AS count FROM customers_services_details
-                                WHERE service_id = s.id
-                                GROUP BY s.id
+                DB::raw('((SUM(' . $this->db_prefix . 'csd_c.price_sell) - SUM(IF(
+                        ' . $this->db_prefix . 's.is_share = 1,
+                        ' . $this->db_prefix . 's.price_buy / (
+                            SELECT COUNT(id) AS count FROM ' . $this->db_prefix . 'customers_services_details
+                                WHERE service_id = ' . $this->db_prefix . 's.id
+                                GROUP BY ' . $this->db_prefix . 's.id
                         ),
-                        s.price_buy
+                        ' . $this->db_prefix . 's.price_buy
                     ))) / SUM(IF(
-                        s.is_share = 1,
-                        s.price_buy / (
-                            SELECT COUNT(id) AS count FROM customers_services_details
-                                WHERE service_id = s.id
-                                GROUP BY s.id
+                        ' . $this->db_prefix . 's.is_share = 1,
+                        ' . $this->db_prefix . 's.price_buy / (
+                            SELECT COUNT(id) AS count FROM ' . $this->db_prefix . 'customers_services_details
+                                WHERE service_id = ' . $this->db_prefix . 's.id
+                                GROUP BY ' . $this->db_prefix . 's.id
                         ),
-                        s.price_buy
+                        ' . $this->db_prefix . 's.price_buy
                     )) * 100) AS per_utile'),
             ])
             ->where(function ($q) use ($s_array){

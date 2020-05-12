@@ -116,7 +116,9 @@
                         <tr>
                             <td class="text-center align-middle">
                                 <strong>
+                                    @if(count($customers) > 0)
                                     &euro; {{ number_format($totals['price_utile'] / count($customers), 2, ',', '.') }}
+                                    @endif
                                 </strong>
                             </td>
                         </tr>

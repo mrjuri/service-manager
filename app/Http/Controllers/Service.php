@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 
 class Service extends Controller
 {
+    protected $db_prefix;
+
     /**
      * Create a new controller instance.
      *
@@ -16,6 +18,8 @@ class Service extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+
+        $this->db_prefix = env('DB_PREFIX');
     }
 
     /**
@@ -52,34 +56,34 @@ class Service extends Controller
                 'services.name AS name',
                 'services.fic_cod AS fic_cod',
                 'services.is_share AS is_share',
-                DB::raw('COUNT(customers_services_details.service_id) AS n_servizi_venduti'),
+                DB::raw('COUNT(' . $this->db_prefix . 'customers_services_details.service_id) AS n_servizi_venduti'),
                 'services.price_buy AS price_buy',
                 DB::raw('IF(
-                    services.is_share = 1,
-                    SUM(customers_services_details.price_sell),
-                    services.price_sell
+                    ' . $this->db_prefix . 'services.is_share = 1,
+                    SUM(' . $this->db_prefix . 'customers_services_details.price_sell),
+                    ' . $this->db_prefix . 'services.price_sell
                 ) AS price_sell'),
                 DB::raw('(IF(
-                    services.is_share = 1,
-                    SUM(customers_services_details.price_sell),
-                    services.price_sell
-                ) - services.price_buy) AS price_utile'),
+                    ' . $this->db_prefix . 'services.is_share = 1,
+                    SUM(' . $this->db_prefix . 'customers_services_details.price_sell),
+                    ' . $this->db_prefix . 'services.price_sell
+                ) - ' . $this->db_prefix . 'services.price_buy) AS price_utile'),
                 DB::raw('((IF(
-                    services.is_share = 1,
-                    SUM(customers_services_details.price_sell),
-                    services.price_sell
-                ) - services.price_buy) / services.price_buy * 100) AS per_utile'),
-                DB::raw('(SUM(customers_services_details.price_sell)
+                    ' . $this->db_prefix . 'services.is_share = 1,
+                    SUM(' . $this->db_prefix . 'customers_services_details.price_sell),
+                    ' . $this->db_prefix . 'services.price_sell
+                ) - ' . $this->db_prefix . 'services.price_buy) / ' . $this->db_prefix . 'services.price_buy * 100) AS per_utile'),
+                DB::raw('(SUM(' . $this->db_prefix . 'customers_services_details.price_sell)
                 - (IF(
-                    services.is_share = 1,
-                    services.price_buy,
-                    services.price_buy * COUNT(customers_services_details.service_id)
+                    ' . $this->db_prefix . 'services.is_share = 1,
+                    ' . $this->db_prefix . 'services.price_buy,
+                    ' . $this->db_prefix . 'services.price_buy * COUNT(' . $this->db_prefix . 'customers_services_details.service_id)
                 ))) AS price_utile_totale'),
-                DB::raw('(SUM(customers_services_details.price_sell)
+                DB::raw('(SUM(' . $this->db_prefix . 'customers_services_details.price_sell)
                 - (IF(
-                    services.is_share = 1,
-                    services.price_buy,
-                    services.price_buy * COUNT(customers_services_details.service_id)
+                    ' . $this->db_prefix . 'services.is_share = 1,
+                    ' . $this->db_prefix . 'services.price_buy,
+                    ' . $this->db_prefix . 'services.price_buy * COUNT(' . $this->db_prefix . 'customers_services_details.service_id)
                 ))) / ' . $totals['price_utile'] . ' * 100 AS per')
             ])
             ->orWhere('name', 'LIKE', '%' . $s . '%')
