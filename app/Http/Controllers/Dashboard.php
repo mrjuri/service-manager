@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 
 class Dashboard extends Controller
 {
+    protected $db_prefix;
+
     /**
      * Create a new controller instance.
      *
@@ -19,6 +21,8 @@ class Dashboard extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+
+        $this->db_prefix = env('DB_PREFIX');
     }
 
     public function view(Request $request)

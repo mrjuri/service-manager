@@ -13,23 +13,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-/*
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
-*/
+$user = \App\Model\User::take(1)->first();
 
 Auth::routes([
-    'register' => false,
+    'register' => !$user ? true : false,
     'reset' => false,
 ]);
 
-Route::get('/', 'Dashboard@view')
-     ->name('home');
+if (!$user) {
+    Route::get('/', function (){
+        return redirect('/register');
+    })->name('home');
+
+} else {
+
+    Route::get('/', 'Dashboard@view')
+         ->name('home');
+}
 
 Route::get('/service', 'Service@index')
      ->name('service.list');
