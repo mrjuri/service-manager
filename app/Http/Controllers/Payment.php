@@ -40,6 +40,21 @@ class Payment extends Controller
     {
         $payment = \App\Model\Payment::firstWhere('sid', $sid);
 
+        if ($payment) {
+
+            $customer_service = CustomersServices::with('customer')
+                                                 ->with('details')
+                                                 ->find($payment->customer_service_id);
+
+        }
+
+        /**
+         * Se il link o il servizio non vengono trovati, mostrare una pagina notfound.
+         */
+        if (!$payment || !$customer_service) {
+            return view('payment.nofound');
+        }
+
         if ($payment->type != '') {
 
             /**
@@ -50,62 +65,48 @@ class Payment extends Controller
 
         } else {
 
-            $customer_service = CustomersServices::with('customer')
-                                                 ->with('details')
-                                                 ->find($payment->customer_service_id);
+            $customers_services_details = CustomersServicesDetails::with('service')
+                                                                  ->where('customer_service_id', $payment->customer_service_id)
+                                                                  ->orderBy('price_sell', 'DESC')
+                                                                  ->orderBy('reference', 'ASC')
+                                                                  ->get();
 
-            if (!$customer_service) {
+            foreach ($customers_services_details as $customer_service_detail) {
 
-                /**
-                 * Se il servizio non viene trovato, mostrare una pagina notfound.
-                 */
-                return view('payment.nofound');
+                if (!isset($array_services_rows[$customer_service_detail->service->name_customer_view])) {
 
-            } else {
+                    $array_services_rows[$customer_service_detail->service->name_customer_view] = array(
+                        'price_sell' => $customer_service_detail->service->price_sell,
+                        'price_customer_sell' => $customer_service_detail->price_sell,
+                        'is_share' => $customer_service_detail->service->is_share,
+                        'reference' => array()
+                    );
 
-                $customers_services_details = CustomersServicesDetails::with('service')
-                                                                      ->where('customer_service_id', $payment->customer_service_id)
-                                                                      ->orderBy('price_sell', 'DESC')
-                                                                      ->orderBy('reference', 'ASC')
-                                                                      ->get();
-
-                foreach ($customers_services_details as $customer_service_detail) {
-
-                    if (!isset($array_services_rows[$customer_service_detail->service->name_customer_view])) {
-
-                        $array_services_rows[$customer_service_detail->service->name_customer_view] = array(
-                            'price_sell' => $customer_service_detail->service->price_sell,
-                            'price_customer_sell' => $customer_service_detail->price_sell,
-                            'is_share' => $customer_service_detail->service->is_share,
-                            'reference' => array()
-                        );
-
-                    }
-
-                    $array_services_rows[$customer_service_detail->service->name_customer_view]['reference'][] = $customer_service_detail->reference;
                 }
 
-                $fattureincloud = new FattureInCloudAPI();
-                $cliente = $fattureincloud->api(
-                    'clienti/lista',
-                    array(
-                        'api_uid' => env('FIC_API_UID'),
-                        'api_key' => env('FIC_API_KEY'),
-                        'piva' => $customer_service->piva ? $customer_service->piva : $customer_service->customer->piva
-                    )
-                );
-
-                $privacy_msg = Storage::disk('public')->get('privacy_template/privacy.html');
-
-                return view('payment.checkout', [
-                    'payment' => $payment,
-                    'customer_service' => $customer_service,
-                    'customers_services_details' => $customers_services_details,
-                    'array_services_rows' => $array_services_rows,
-                    'cliente' => $cliente['lista_clienti'][0],
-                    'privacy_msg' => $privacy_msg,
-                ]);
+                $array_services_rows[$customer_service_detail->service->name_customer_view]['reference'][] = $customer_service_detail->reference;
             }
+
+            $fattureincloud = new FattureInCloudAPI();
+            $cliente = $fattureincloud->api(
+                'clienti/lista',
+                array(
+                    'api_uid' => env('FIC_API_UID'),
+                    'api_key' => env('FIC_API_KEY'),
+                    'piva' => $customer_service->piva ? $customer_service->piva : $customer_service->customer->piva
+                )
+            );
+
+            $privacy_msg = Storage::disk('public')->get('privacy_template/privacy.html');
+
+            return view('payment.checkout', [
+                'payment' => $payment,
+                'customer_service' => $customer_service,
+                'customers_services_details' => $customers_services_details,
+                'array_services_rows' => $array_services_rows,
+                'cliente' => $cliente['lista_clienti'][0],
+                'privacy_msg' => $privacy_msg,
+            ]);
         }
     }
 
