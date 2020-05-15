@@ -217,11 +217,13 @@ class Payment extends Controller
      */
     public function sid_create($customer_service_id)
     {
-        $payment = \App\Model\Payment::firstWhere('customer_service_id', $customer_service_id);
+        $service = CustomersServices::find($customer_service_id);
+
+        $payment = \App\Model\Payment::where('customer_service_id', $customer_service_id)
+                                     ->where('customer_service_expiration', $service->expiration)
+                                     ->first();
 
         if (!$payment) {
-
-            $service = CustomersServices::find($customer_service_id);
 
             $payment = new \App\Model\Payment();
             $payment->sid = md5(uniqid(mt_rand(), true));
