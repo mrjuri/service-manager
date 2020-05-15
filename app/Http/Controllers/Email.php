@@ -156,8 +156,28 @@ class Email extends Controller
      */
     public function sendExpirationList()
     {
-        $customers_services = CustomersServices::where('expiration', '>', date('YmdHis'))
+        $customers_services = CustomersServices::select([
+                                                    'customers_services.id AS id',
+                                                    /*'customers_services.customer_id AS customer_id',
+                                                    'customers_services.piva AS piva',
+                                                    'customers_services.company AS company',
+                                                    'customers_services.email AS email',
+                                                    'customers_services.customer_name AS customer_name',
+                                                    'customers_services.name AS name',
+                                                    'customers_services.reference AS reference',
+                                                    'customers_services.expiration AS expiration',
+                                                    'payments.type AS payment_type',*/
+                                                ])
+                                               ->leftJoin('payments', function($join) {
+                                                   $join->on('payments.customer_service_id', '=', 'customers_services.id');
+                                                   $join->on('payments.customer_service_expiration', '=', 'customers_services.expiration');
+                                               })
+                                               ->where('expiration', '>', date('YmdHis'))
                                                ->where('expiration', '<', date('YmdHis', strtotime('+2 month')))
+                                               ->where(function ($query){
+                                                   $query->where('payments.type', '')
+                                                         ->orWhereNull('payments.type');
+                                               })
                                                ->orderBy('expiration', 'ASC')
                                                ->get();
 
