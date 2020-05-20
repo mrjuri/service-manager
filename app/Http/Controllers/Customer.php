@@ -264,81 +264,92 @@ class Customer extends Controller
         CustomersServices::where('customer_id', $customer_id)->delete();
         CustomersServicesDetails::where('customer_id', $customer_id)->delete();
 
+        /**
+         * Variabili del servizio
+         */
+        $service_id = $request->input('service_id');
+        $service_expiration = $request->input('service_expiration');
+        $service_reference = $request->input('service_reference');
+        $service_piva = $request->input('service_piva');
+        $service_company = $request->input('service_company');
+        $service_email = $request->input('service_email');
+        $service_customer_name = $request->input('service_customer_name');
+
+        /**
+         * Variabili dei dettagli del servizio
+         */
+        $service_details_id = $request->input('service_details_id');
+        $service_details = $request->input('service_details');
+        $service_details_reference = $request->input('service_details_reference');
+        $service_details_price_sell = $request->input('service_details_price_sell');
+
         foreach ($request->input('service_name') as $k => $service_name) {
 
+            /**
+             * Salvo il servizio del cliente
+             */
             $customerService = new CustomersServices();
-
-            $expiration = $request->input('service_expiration');
-            $reference = $request->input('service_reference');
-            $piva = $request->input('service_piva');
-            $company = $request->input('service_company');
-            $email = $request->input('service_email');
-            $customer_name = $request->input('service_customer_name');
 
             $customerService->customer_id = $customer_id;
             $customerService->name = $service_name;
 
-            if (isset($reference[$k])) {
-                $customerService->reference = $reference[$k];
-            }
+            if (isset($service_id[$k]))
+                $customerService->id = $service_id[$k];
 
-            if (isset($company[$k])) {
-                $customerService->company = $company[$k];
-            }
-
-            if (isset($piva[$k])) {
-                $customerService->piva = $piva[$k];
-            }
-
-            if (isset($email[$k])) {
-                $customerService->email = $email[$k];
-            }
-
-            if (isset($customer_name[$k])) {
-                $customerService->customer_name = $customer_name[$k];
-            }
-
-            if (isset($expiration[$k])) {
+            if (isset($service_expiration[$k])) {
                 $customerService->expiration = date('YmdHis',
-                    strtotime(str_replace('/', '-', $expiration[$k]) . ' 00:00:00')
+                    strtotime(str_replace('/', '-', $service_expiration[$k]) . ' 00:00:00')
                 );
             }
 
+            if (isset($service_reference[$k]))
+                $customerService->reference = $service_reference[$k];
+
+            if (isset($service_piva[$k]))
+                $customerService->piva = $service_piva[$k];
+
+            if (isset($service_company[$k]))
+                $customerService->company = $service_company[$k];
+
+            if (isset($service_email[$k]))
+                $customerService->email = $service_email[$k];
+
+            if (isset($service_customer_name[$k]))
+                $customerService->customer_name = $service_customer_name[$k];
+
             $customerService->save();
 
-            $service_details = $request->input('service_details');
+            if (isset($service_details[$k])) {
 
-            if (is_array($service_details[$k])) {
+                foreach ($service_details[$k] as $k_detail => $service_detail_id) {
 
-                foreach ($service_details[$k] as $k_detail => $service_id) {
+                    if ($service_detail_id) {
 
-                	if ($service_id != '') {
+                        /**
+                         * Salvo il dettaglio del servizio del cliente
+                         */
+                        $customerServiceDetail = new CustomersServicesDetails();
 
-		                $customerServiceDetail = new CustomersServicesDetails();
+                        $customerServiceDetail->customer_id = $customer_id;
+                        $customerServiceDetail->service_id = intval($service_detail_id);
+                        $customerServiceDetail->customer_service_id = $customerService->id;
 
-		                $reference = $request->input('service_details_reference');
-		                $price_sell = $request->input('service_details_price_sell');
+                        if (isset($service_details_id[$k][$k_detail]))
+                            $customerServiceDetail->id = $service_details_id[$k][$k_detail];
 
-		                $customerServiceDetail->customer_id = $customer_id;
-		                $customerServiceDetail->service_id = intval($service_id);
-		                $customerServiceDetail->customer_service_id = $customerService->id;
+                        if (isset($service_details_reference[$k][$k_detail]))
+                            $customerServiceDetail->reference = $service_details_reference[$k][$k_detail];
 
-		                if (isset($reference[$k][$k_detail])) {
-			                $customerServiceDetail->reference = $reference[$k][$k_detail];
-		                }
+                        if (isset($service_details_price_sell[$k][$k_detail])) {
+                            $customerServiceDetail->price_sell = floatval(
+                                str_replace(',', '.', $service_details_price_sell[$k][$k_detail])
+                            );
+                        }
 
-		                if (isset($price_sell[$k][$k_detail])) {
-			                $customerServiceDetail->price_sell = floatval(str_replace(',', '.', $price_sell[$k][$k_detail]));
-		                }
-
-		                $customerServiceDetail->save();
-
-	                }
-
+                        $customerServiceDetail->save();
+                    }
                 }
-
             }
-
         }
     }
 

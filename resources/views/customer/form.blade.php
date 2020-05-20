@@ -7,20 +7,11 @@
 
         window.onload = function() {
 
-            $('body').on('click', '.btn-service-new', function () {
-
-                var $Obj = $(this);
-                var $ObjContainer = $Obj.closest('.service');
-                var $serviceHTML = '<div class="service">' + $ObjContainer.html() + "</div>";
-
-                $Obj.removeClass('btn-service-new').addClass('btn-service-del');
-                $Obj.html('<i class="fas fa-minus"></i>');
-
-                $ObjContainer.parent().find('.service').last().after($serviceHTML);
-
-                /**
-                 * Imposto le variabili con Array bidimensionali
-                 */
+            /**
+             * Imposto le variabili con Array bidimensionali
+             */
+            function fixIndex()
+            {
                 $('.service').each(function (i) {
 
                     $(this).find('.service-details-input').each(function (i_details) {
@@ -33,6 +24,26 @@
                     });
 
                 });
+            }
+
+            $('body').on('click', '.btn-service-new', function () {
+
+                var $Obj = $(this);
+                var $ObjContainer = $Obj.closest('.service');
+                var $serviceHTML = '<div class="service">' + $ObjContainer.html() + "</div>";
+
+                $Obj.removeClass('btn-service-new').addClass('btn-service-del');
+                $Obj.html('<i class="fas fa-minus"></i>');
+
+                $ObjContainer.parent().find('.service').last().after($serviceHTML);
+
+                /**
+                 * Rimuovo gli ID
+                 */
+                $('.service').last().find('.service_id').remove();
+                $('.service').last().find('.service_details_id').remove();
+
+                fixIndex();
 
                 return false;
 
@@ -41,6 +52,8 @@
             $('body').on('click', '.btn-service-del', function () {
 
                 $(this).closest('.service').remove();
+
+                fixIndex();
 
                 return false;
 
@@ -57,6 +70,11 @@
                 $Obj.html('<i class="fas fa-minus"></i>');
 
                 $ObjContainer.parent().find('.service-details').last().after($serviceDetailHTML);
+
+                /**
+                 * Rimuovo gli ID
+                 */
+                $ObjContainer.parent().find('.service-details').last().find('.service_details_id').remove();
 
                 return false;
 
@@ -164,6 +182,12 @@
         @foreach($customersServices as $k => $customerService)
 
             <div class="service">
+
+                @if(isset($customerService->id))
+                    <div class="service_id">
+                        <input type="hidden" name="service_id[]" value="{{ $customerService->id }}">
+                    </div>
+                @endif
 
                 <div class="card border-warning">
 
@@ -302,6 +326,12 @@
                         @foreach($customerService->details as $k_detail => $detail)
 
                             <div class="service-details">
+
+                                @if(isset($detail->id))
+                                    <div class="service_details_id">
+                                        <input type="hidden" class="service-details-input" name="service_details_id[{{ $k }}][]" value="{{ $detail->id }}">
+                                    </div>
+                                @endif
 
                                 <div class="row">
                                     <div class="col-lg-5">
