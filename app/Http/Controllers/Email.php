@@ -34,8 +34,15 @@ class Email extends Controller
     {
         $payment = \App\Model\Payment::firstWhere('sid', $sid);
 
+        /**
+         * Se il link o il servizio non vengono trovati, mostrare una pagina notfound.
+         */
+        if (!$payment) {
+            return view('payment.nofound');
+        }
+
         $html = Storage::disk('public')->get('mail_template/' . $view . '.html');
-        $content = $this->get_template($payment->customer_service_id, $view, $html);
+        $content = $this->get_template($sid, $view, $html);
 
         return view('mail.service-msg', [
             'content' => $content
@@ -57,10 +64,10 @@ class Email extends Controller
     public function sendExpiration($id)
     {
         $payment = new Payment();
-        $payment->sid_create($id);
+        $sid = $payment->sid_create($id);
 
         $html = Storage::disk('public')->get('mail_template/expiration.html');
-        $content = $this->get_template($id, 'expiration', $html);
+        $content = $this->get_template($sid, 'expiration', $html);
         $data_array = $this->get_data($id);
 
         $email_array = explode(';', $data_array['to']);
@@ -113,7 +120,7 @@ class Email extends Controller
         $payment = \App\Model\Payment::firstWhere('sid', $sid);
 
         $html = Storage::disk('public')->get('mail_template/confirm-' . $payment->type . '.html');
-        $content = $this->get_template($payment->customer_service_id, 'confirm-' . $payment->type, $html);
+        $content = $this->get_template($sid, 'confirm-' . $payment->type, $html);
         $data_array = $this->get_data($payment->customer_service_id);
 
         $email_array = explode(';', $data_array['to']);
@@ -145,8 +152,10 @@ class Email extends Controller
         $payment = \App\Model\Payment::firstWhere('sid', $sid);
 
         $html = Storage::disk('public')->get('mail_template/confirm-' . $payment->type . '.html');
-        $content = $this->get_template($html, $payment->customer_service_id);
+        $content = $this->get_template($sid, 'confirm-' . $payment->type, $html);
         $data_array = $this->get_data($payment->customer_service_id);
+
+        $email_array = explode(';', $data_array['to']);
     }
 
     /**
@@ -217,15 +226,13 @@ class Email extends Controller
      *
      * @return array
      */
-    public function get_data_template_replace($customer_service_id, $view)
+    public function get_data_template_replace($sid, $view)
     {
+        $payment = \App\Model\Payment::firstWhere('sid', $sid);
+
         $customer_service = CustomersServices::with('customer')
                                              ->with('details')
-                                             ->find($customer_service_id);
-
-        $payment = \App\Model\Payment::where('customer_service_id', $customer_service_id)
-                                     ->where('customer_service_expiration', $customer_service->expiration)
-                                     ->first();
+                                             ->find($payment->customer_service_id);
 
         $price_sell_tot = 0;
         foreach ($customer_service->details as $detail) {
@@ -237,10 +244,10 @@ class Email extends Controller
             '[customers-name]' => $customer_service->customer_name ? $customer_service->customer_name : $customer_service->customer->name,
             '[customers_services-name]' => $customer_service->name,
             '[customers_services-reference]' => $customer_service->reference,
-            '[customers_services-expiration]' => date('d/m/Y', strtotime($customer_service->expiration)),
+            '[customers_services-expiration]' => date('d/m/Y', strtotime($payment->customer_service_expiration)),
             '[customers_services-expiration-banner_]' => '
                 <div class="date-exp-container">
-                    <div class="date-exp">'. date('d-m-Y', strtotime($customer_service->expiration)) . '</div>
+                    <div class="date-exp">'. date('d-m-Y', strtotime($payment->customer_service_expiration)) . '</div>
                     <div class="date-exp-msg">(data di scadenza e disattivazione dei servizi)</div>
                 </div>
             ',
@@ -248,14 +255,14 @@ class Email extends Controller
 
             'http://[customers_services-link_]' => '[customers_services-link_]',
             'https://[customers_services-link_]' => '[customers_services-link_]',
-            '[customers_services-link_]' => route('payment.checkout', $payment->sid),
+            '[customers_services-link_]' => route('payment.checkout', $sid),
 
             'http://[email-link_]' => '[email-link_]',
             'https://[email-link_]' => '[email-link_]',
-            '[email-link_]' => route('email.show', [$view, $payment->sid]),
+            '[email-link_]' => route('email.show', [$view, $sid]),
 
             '*|MC:SUBJECT|*' => '[' . $customer_service->reference . '] - ' . $customer_service->name . ' in scadenza',
-            '*|MC_PREVIEW_TEXT|*' => date('d/m/Y', strtotime($customer_service->expiration)) . ' disattivazione ' . $customer_service->name . ' ' . $customer_service->reference,
+            '*|MC_PREVIEW_TEXT|*' => date('d/m/Y', strtotime($payment->customer_service_expiration)) . ' disattivazione ' . $customer_service->name . ' ' . $customer_service->reference,
         );
 
         return $str_replace_array;
@@ -270,9 +277,9 @@ class Email extends Controller
      *
      * @return string|string[]
      */
-    public function get_template($customer_service_id, $view, $html)
+    public function get_template($sid, $view, $html)
     {
-        $str_replace_array = $this->get_data_template_replace($customer_service_id, $view);
+        $str_replace_array = $this->get_data_template_replace($sid, $view);
 
         $style_custom = '
             <style>

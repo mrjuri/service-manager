@@ -136,7 +136,7 @@ class Payment extends Controller
         }
 
         $email = new Email();
-        $str_replace_array = $email->get_data_template_replace($payment->customer_service_id, '');
+        $str_replace_array = $email->get_data_template_replace($sid, '');
         $payment_info = Storage::disk('public')->get('payment/' . $payment->type . '.html');
 
         foreach ($str_replace_array as $k => $v) {
@@ -233,5 +233,7 @@ class Payment extends Controller
             $payment->save();
 
         }
+
+        return $payment->sid;
     }
 }
