@@ -23,8 +23,11 @@ class FattureInCloudAPI extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($customer_service_id)
+    public function create(Request $request)
     {
+        $customer_service_id = $request->input('customer_service_id');
+        $pagamento_saldato = $request->input('pagamento_saldato');
+
         /*$info_account = $this->api(
             'info/account',
             array(
@@ -34,7 +37,9 @@ class FattureInCloudAPI extends Controller
                     "lista_metodi_pagamento"
                 ]
             )
-        );*/
+        );
+
+        dd($info_account);*/
 
         /**
          * Fatture in Cloud
@@ -144,7 +149,8 @@ class FattureInCloudAPI extends Controller
                 array(
                     'data_scadenza' => date('d/m/Y'),
                     'importo' => 'auto',
-                    'metodo' => 'not',
+                    'metodo' => $pagamento_saldato == 1 ? env('FIC_metodo_nome') : 'not',
+                    'data_saldo' => date('d/m/Y'),
                 )
             )
         );

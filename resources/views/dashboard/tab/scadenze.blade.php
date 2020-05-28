@@ -3,7 +3,7 @@
     window.onload = function() {
 
         $('.modal').on('show.bs.modal', function(e) {
-            $(this).find('.btn-confirm').attr('href', $(e.relatedTarget).data('href'));
+            $(this).find('#customer_service_id').val($(e.relatedTarget).data('id'));
         });
 
         $(function () {
@@ -73,7 +73,7 @@
                                     @endif"
                                     data-toggle="modal"
                                     data-target="#invoiceModal"
-                                    data-href="{{ route('fattureincloud.api.create', $customersService->id) }}">
+                                    data-id="{{ $customersService->id }}">
                                 <i class="fas fa-file-invoice-dollar"></i>
                             </button>
                         </div>
@@ -273,28 +273,61 @@
                 </button>
             </div>
             <div class="modal-body">
-                Vuoi inviare la fattura al cliente?
+
                 <br><br>
-                <small>
-                    <strong>Nota:</strong>
-                    <br>
-                    Generando la fattura rinnoverai automaticamente il servizio
-                </small>
 
-                <br /><br />
-
-                <div class="row">
-                    <div class="col-lg-6">
-
-                        <a href="#" class="btn btn-success btn-block btn-confirm">Sì</a>
-
-                    </div>
-                    <div class="col-lg-6">
-
-                        <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">No</button>
-
-                    </div>
+                <div class="text-center">
+                    Vuoi <strong>inviare la fattura</strong> al cliente?
                 </div>
+
+                <br><br>
+
+                <hr>
+
+                <form action="{{ route('fattureincloud.api.create') }}" method="post">
+
+                    @csrf
+
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox"
+                               class="custom-control-input"
+                               id="paymentSwitch"
+                               name="pagamento_saldato"
+                               value="1"
+                               checked>
+                        <label class="custom-control-label" for="paymentSwitch">
+                            Pagamento ricevuto.
+                            <br>
+                            <small>(se lo switch è attivo, la fattura risulterà saldata)</small>
+                        </label>
+                    </div>
+
+                    <hr>
+
+                    <small>
+                        <strong>Nota:</strong>
+                        <br>
+                        Generando la fattura rinnoverai automaticamente il servizio al prossimo anno.
+                    </small>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+
+                            <button type="submit" class="btn btn-success btn-block btn-confirm">Sì</button>
+
+                            <input type="hidden" name="customer_service_id" id="customer_service_id" value="">
+
+                        </div>
+                        <div class="col-lg-6">
+
+                            <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">No</button>
+
+                        </div>
+                    </div>
+
+                </form>
 
             </div>
         </div>
