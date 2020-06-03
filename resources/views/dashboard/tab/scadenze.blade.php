@@ -3,7 +3,19 @@
     window.onload = function() {
 
         $('.modal').on('show.bs.modal', function(e) {
-            $(this).find('#customer_service_id').val($(e.relatedTarget).data('id'));
+
+            var Obj = $(this);
+            var ObjCSID = Obj.find('#customer_service_id');
+            var ObjBtnConf = Obj.find('.btn-confirm');
+
+            if ( ObjCSID.length > 0 ) {
+                ObjCSID.val($(e.relatedTarget).data('id'));
+            }
+
+            if ( ObjBtnConf.length > 0 ) {
+                ObjBtnConf.attr('href', $(e.relatedTarget).data('href'));
+            }
+
         });
 
         $(function () {
@@ -200,7 +212,7 @@
 
 </table>
 
-<!-- Modal -->
+<!-- Modal rinnovo servizio -->
 <div class="modal fade" id="renewModal" tabindex="-1" role="dialog" aria-labelledby="renewModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -232,6 +244,8 @@
         </div>
     </div>
 </div>
+
+<!-- Modal invio mail scadenza servizio -->
 <div class="modal fade" id="sendAlertModal" tabindex="-1" role="dialog" aria-labelledby="sendAlertModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -263,6 +277,8 @@
         </div>
     </div>
 </div>
+
+<!-- Modal generazione fattura -->
 <div class="modal fade" id="invoiceModal" tabindex="-1" role="dialog" aria-labelledby="invoiceModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -315,7 +331,7 @@
                     <div class="row">
                         <div class="col-lg-6">
 
-                            <button type="submit" class="btn btn-success btn-block btn-confirm">Sì</button>
+                            <button type="submit" class="btn btn-success btn-block">Sì</button>
 
                             <input type="hidden" name="customer_service_id" id="customer_service_id" value="">
 
