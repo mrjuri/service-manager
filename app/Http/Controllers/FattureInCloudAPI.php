@@ -45,14 +45,7 @@ class FattureInCloudAPI extends Controller
          * Fatture in Cloud
          * Recupero dati dei proditti
          */
-        $prodotti_lista = $this->api(
-            'prodotti/lista',
-            array(
-                'api_uid' => env('FIC_API_UID'),
-                'api_key' => env('FIC_API_KEY'),
-                'cod' => ''
-            )
-        );
+        $prodotti_lista = $this->api('prodotti/lista');
 
         /**
          * Recupero dati per la fattura
@@ -133,31 +126,27 @@ class FattureInCloudAPI extends Controller
          * Fatture in Cloud
          * Creazione nuova fattura
          */
-        $request = array(
-            'api_uid' => env('FIC_API_UID'),
-            'api_key' => env('FIC_API_KEY'),
-            'nome' => $customer_service->customer_name ? $customer_service->customer_name : $customer_service->customer->name,
-            'piva' => $customer_service->piva ? $customer_service->piva : $customer_service->customer->piva,
-            'autocompila_anagrafica' => true,
-            'mostra_info_pagamento' => true,
-            'metodo_id' => env('FIC_metodo_id'),
-            'prezzi_ivati' => false,
-            'PA' => true,
-            'PA_tipo_cliente' => 'B2B',
-            'lista_articoli' => $lista_articoli,
-            'lista_pagamenti' => array(
-                array(
-                    'data_scadenza' => date('d/m/Y'),
-                    'importo' => 'auto',
-                    'metodo' => $pagamento_saldato == 1 ? env('FIC_metodo_nome') : 'not',
-                    'data_saldo' => date('d/m/Y'),
-                )
-            )
-        );
-
         $fattura_nuova = $this->api(
             'fatture/nuovo',
-            $request
+            array(
+                'nome' => $customer_service->customer_name ? $customer_service->customer_name : $customer_service->customer->name,
+                'piva' => $customer_service->piva ? $customer_service->piva : $customer_service->customer->piva,
+                'autocompila_anagrafica' => true,
+                'mostra_info_pagamento' => true,
+                'metodo_id' => env('FIC_metodo_id'),
+                'prezzi_ivati' => false,
+                'PA' => true,
+                'PA_tipo_cliente' => 'B2B',
+                'lista_articoli' => $lista_articoli,
+                'lista_pagamenti' => array(
+                    array(
+                        'data_scadenza' => date('d/m/Y'),
+                        'importo' => 'auto',
+                        'metodo' => $pagamento_saldato == 1 ? env('FIC_metodo_nome') : 'not',
+                        'data_saldo' => date('d/m/Y'),
+                    )
+                )
+            )
         );
 
         $fattura_inviamail = 0;
@@ -170,11 +159,7 @@ class FattureInCloudAPI extends Controller
              */
             $infomail = $this->api(
                 'fatture/infomail',
-                array(
-                    'api_uid' => env('FIC_API_UID'),
-                    'api_key' => env('FIC_API_KEY'),
-                    'id' => $fattura_nuova['new_id']
-                )
+                array('id' => $fattura_nuova['new_id'])
             );
 
             /**
@@ -184,8 +169,6 @@ class FattureInCloudAPI extends Controller
             $fattura_inviamail = $this->api(
                 'fatture/inviamail',
                 array(
-                    'api_uid' => env('FIC_API_UID'),
-                    'api_key' => env('FIC_API_KEY'),
                     'id' => $fattura_nuova['new_id'],
                     'mail_mittente' => $infomail['mail_mittente'][0]['mail'],
                     'mail_destinatario' => $customer_service->email ? $customer_service->email : $customer_service->customer->email,
@@ -204,15 +187,82 @@ class FattureInCloudAPI extends Controller
         }
     }
 
+    // --------------------------------------------------------------------------
+
+    public function fattureImport()
+    {
+        $fatture_in = $this->get(
+            'fatture',
+            'lista',
+            array(
+                'anno' => 2020,
+                'data_inizio' => '01/04/2020'
+            )
+        );
+
+        $fatture_out = $this->get(
+            'acquisti',
+            'lista',
+            array(
+                'anno' => 2020,
+                'data_inizio' => '01/04/2020'
+            )
+        );
+
+        $tot_netto_in = 0;
+
+        foreach ($fatture_in as $d) {
+
+            $tot_netto_in += $d['importo_netto'];
+
+        }
+
+        $tot_netto_out = 0;
+
+        foreach ($fatture_out as $d) {
+
+            $tot_netto_out += $d['importo_netto'];
+
+        }
+
+        dd($tot_netto_in - $tot_netto_out);
+    }
+
+    public function get($resource, $action, $filter = array())
+    {
+        $fic_result = $this->api(
+            $resource . '/' . $action,
+            $filter
+        );
+
+        if ($resource == 'preventivi' ||
+            $resource == 'fatture' ||
+            $resource == 'acquisti') {
+            $resource = 'documenti';
+        }
+
+        return $fic_result[$action . '_' . $resource];
+    }
+
     /**
-     * @param $url
-     * @param $request
+     * Mi collegato a Fatture in Cloud tramite API
+     * e recupero le risorse richieste.
+     *
+     * @param $resource
+     * @param $filter
      *
      * @return mixed
      */
-    public function api($url, $request)
+    public function api($resource, $filter = array())
     {
-        $url = 'https://api.fattureincloud.it/v1/' . $url;
+        $url = 'https://api.fattureincloud.it/v1/' . $resource;
+
+        $array_auth = array(
+            'api_uid' => env('FIC_API_UID'),
+            'api_key' => env('FIC_API_KEY')
+        );
+
+        $request = array_merge($filter, $array_auth);
 
         $options = array(
             "http" => array(
@@ -221,7 +271,9 @@ class FattureInCloudAPI extends Controller
                 "content" => json_encode($request)
             ),
         );
+
         $context  = stream_context_create($options);
+
         $result = json_decode(file_get_contents($url, false, $context), true);
 
         return $result;

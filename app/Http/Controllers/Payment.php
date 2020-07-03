@@ -91,8 +91,6 @@ class Payment extends Controller
             $cliente = $fattureincloud->api(
                 'clienti/lista',
                 array(
-                    'api_uid' => env('FIC_API_UID'),
-                    'api_key' => env('FIC_API_KEY'),
                     'piva' => $customer_service->piva ? $customer_service->piva : $customer_service->customer->piva
                 )
             );
