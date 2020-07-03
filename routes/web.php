@@ -81,4 +81,4 @@ Route::post('/payment/checkout/update/{sid}', 'Payment@update')
 Route::get('/payment/confirm/{sid}', 'Payment@confirm')
      ->name('payment.confirm');
 
-Route::get('/fic', 'FattureInCloudAPI@fattureImport');
+Route::get('/fic', 'GoogleSheetsAPI@fattureImport');
