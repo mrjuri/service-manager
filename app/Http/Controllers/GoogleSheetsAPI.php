@@ -52,8 +52,9 @@ class GoogleSheetsAPI extends Controller
             'fatture',
             'lista',
             array(
-                'anno' => 2020,
-                'data_inizio' => '01/01/2020'
+                'anno' => env('GOOGLE_SHEETS_YEAR'),
+                'data_inizio' => '01/01/' . env('GOOGLE_SHEETS_YEAR'),
+                'data_fine' => '31/12/' . env('GOOGLE_SHEETS_YEAR')
             )
         );
 
@@ -63,8 +64,9 @@ class GoogleSheetsAPI extends Controller
             'acquisti',
             'lista',
             array(
-                'anno' => 2020,
-                'data_inizio' => '01/01/2020'
+                'anno' => env('GOOGLE_SHEETS_YEAR'),
+                'data_inizio' => '01/01/' . env('GOOGLE_SHEETS_YEAR'),
+                'data_fine' => '31/12/' . env('GOOGLE_SHEETS_YEAR')
             )
         );
 
@@ -108,7 +110,7 @@ class GoogleSheetsAPI extends Controller
         /**
          * Inserisco i dati in Google Sheets
          */
-        $range = 'Foglio1!' . $k_tot_month_in[0] . ':' . $k_tot_month_out[count($k_tot_month_out) - 1];
+        $range = env('GOOGLE_SHEETS_YEAR') . '!' . $k_tot_month_in[0] . ':' . $k_tot_month_out[count($k_tot_month_out) - 1];
 
         $values = [
             array_values($tot_month_in),
