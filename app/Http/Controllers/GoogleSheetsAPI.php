@@ -48,7 +48,7 @@ class GoogleSheetsAPI extends Controller
          */
         $fic = new FattureInCloudAPI();
 
-        $fatture_in = $fic->get(
+        $fatture_attive = $fic->get(
             'fatture',
             'lista',
             array(
@@ -60,7 +60,7 @@ class GoogleSheetsAPI extends Controller
 
         $fic = new FattureInCloudAPI();
 
-        $fatture_out = $fic->get(
+        $fatture_passive = $fic->get(
             'acquisti',
             'lista',
             array(
@@ -71,50 +71,112 @@ class GoogleSheetsAPI extends Controller
         );
 
         /**
-         * Calcolo i totali per mese delle fatture
+         * Calcolo i totali per mese delle fatture attive e passive
+         * in più calcolo le tasse a debito e a credito
          */
-        $tot_month_in = array();
+        $tot_month_attivo = array();
+        $iva_debito = array();
 
-        foreach ($fatture_in as $fattura) {
+        foreach ($fatture_attive as $fattura) {
 
+            // Calcolo importo netto in attivo per mese
             $month_n = date('n', strtotime(str_replace('/', '-', $fattura['data'])));
 
-            if (!isset($tot_month_in[$range_array[$month_n]['in']]))
-                $tot_month_in[$range_array[$month_n]['in']] = 0;
+            if (!isset($tot_month_attivo[$range_array[$month_n]['in']])) {
+                $tot_month_attivo[$range_array[$month_n]['in']] = 0;
+            }
 
-            $tot_month_in[$range_array[$month_n]['in']] += $fattura['importo_netto'];
+            $tot_month_attivo[$range_array[$month_n]['in']] += $fattura['importo_netto'];
+
+            // Calcolo tasse (IVA) da debito per mese
+            if (!isset($iva_debito[$month_n])) {
+                $iva_debito[$month_n] = 0;
+            }
+
+            // Verifica se PA per Split Payment
+            if ($fattura['PA_tipo_cliente'] != 'PA') {
+                $iva_debito[$month_n] += $fattura['importo_totale'] - $fattura['importo_netto'];
+            }
 
         }
 
-        $tot_month_in = array_reverse($tot_month_in, true);
-        $k_tot_month_in = array_keys($tot_month_in);
+        $tot_month_attivo = array_reverse($tot_month_attivo, true);
+        $k_tot_month_attivo = array_keys($tot_month_attivo);
 
         // - - -
 
-        $tot_month_out = array();
+        $tot_month_passivo = array();
+        $iva_credito = array();
 
-        foreach ($fatture_out as $fattura) {
+        foreach ($fatture_passive as $fattura) {
 
+            // Calcolo importo netto in passivo per mese
             $month_n = date('n', strtotime(str_replace('/', '-', $fattura['data'])));
 
-            if (!isset($tot_month_out[$range_array[$month_n]['out']]))
-                $tot_month_out[$range_array[$month_n]['out']] = 0;
+            if (!isset($tot_month_passivo[$range_array[$month_n]['out']])) {
+                $tot_month_passivo[$range_array[$month_n]['out']] = 0;
+            }
 
-            $tot_month_out[$range_array[$month_n]['out']] -= $fattura['importo_netto'];
+            $tot_month_passivo[$range_array[$month_n]['out']] -= $fattura['importo_netto'];
+
+            // Calcolo tasse (IVA) a credito per mese
+            if (!isset($iva_credito[$month_n])) {
+                $iva_credito[$month_n] = 0;
+            }
+
+            $iva_credito[$month_n] += $fattura['importo_iva'];
 
         }
 
-        $tot_month_out = array_reverse($tot_month_out, true);
-        $k_tot_month_out = array_keys($tot_month_out);
+        // Sistemo l'array dei totali per importarli correttamente in Google Sheets
+        $tot_month_passivo = array_reverse($tot_month_passivo, true);
+        $k_tot_month_passivo = array_keys($tot_month_passivo);
+
+        // - - -
+
+        // Calcolo l'iva per mese
+        $iva_count = count($iva_credito) > count($iva_debito) ? count($iva_credito) : count($iva_debito);
+        $iva_month = array();
+
+        for ($i = 1; $i <= $iva_count; $i++) {
+
+            if (!isset($iva_debito[$i])) {
+                $iva_debito[$i] = 0;
+            }
+
+            if (!isset($iva_credito[$i])) {
+                $iva_credito[$i] = 0;
+            }
+
+            $iva_month[$i] = $iva_credito[$i] - $iva_debito[$i];
+
+        }
+
+        // Calcolo l'iva per singolo trimestre
+        $iva_trimestre = array();
+
+        foreach (array_chunk($iva_month, 3) as $v) {
+
+            $iva_trimestre[] = array_reduce($v, function ($sum, $item){
+
+                $sum += $item;
+
+                return $sum;
+
+            });
+
+        }
+
+//        dd($iva_trimestre);
 
         /**
          * Inserisco i dati in Google Sheets
          */
-        $range = env('GOOGLE_SHEETS_YEAR') . '!' . $k_tot_month_in[0] . ':' . $k_tot_month_out[count($k_tot_month_out) - 1];
+        $range = env('GOOGLE_SHEETS_YEAR') . '!' . $k_tot_month_attivo[0] . ':' . $k_tot_month_passivo[count($k_tot_month_passivo) - 1];
 
         $values = [
-            array_values($tot_month_in),
-            array_values($tot_month_out)
+            array_values($tot_month_attivo),
+            array_values($tot_month_passivo)
         ];
 
         $client = $this->getClient();
@@ -135,5 +197,7 @@ class GoogleSheetsAPI extends Controller
             $body,
             $params
         );
+
+        dd($result);
     }
 }
