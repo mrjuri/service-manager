@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -47,7 +48,6 @@ class GoogleSheetsAPI extends Controller
          * Prendo i dati da fattureincloud.it
          */
         $fic = new FattureInCloudAPI();
-
         $fatture_attive = $fic->get(
             'fatture',
             'lista',
@@ -59,7 +59,6 @@ class GoogleSheetsAPI extends Controller
         );
 
         $fic = new FattureInCloudAPI();
-
         $fatture_passive = $fic->get(
             'acquisti',
             'lista',
@@ -88,7 +87,7 @@ class GoogleSheetsAPI extends Controller
 
             $tot_month_attivo[$range_array[$month_n]['in']] += $fattura['importo_netto'];
 
-            // Calcolo tasse (IVA) da debito per mese
+            // Calcolo tasse (IVA) a debito per mese
             if (!isset($iva_debito[$month_n])) {
                 $iva_debito[$month_n] = 0;
             }
@@ -100,6 +99,7 @@ class GoogleSheetsAPI extends Controller
 
         }
 
+        // Sistemo l'array dei totali per importarli correttamente in Google Sheets
         $tot_month_attivo = array_reverse($tot_month_attivo, true);
         $k_tot_month_attivo = array_keys($tot_month_attivo);
 
@@ -167,23 +167,79 @@ class GoogleSheetsAPI extends Controller
 
         }
 
-//        dd($iva_trimestre);
+        // Verifico la data finale del trimestre e la confronto con la data attuale
+        // se la data attuale supera il trimestre di 10 giorni, viene azzerato il
+        // valore IVA del trimestre, in questo modo non viene inserito il valore.
+        //
+        // Questo viene fatto perché se il commercialista comunica un importo
+        // diverso di IVA da versare, quest'ultimo non verrà sovrascritto.
+        foreach (array_chunk($iva_month, 3, true) as $k => $v) {
+
+            $keys = array_keys($v);
+
+            $data_fine_trimestre = date(
+                'Y-m-t',
+                mktime(0, 0, 0, $keys[count($keys) - 1], 1, env('GOOGLE_SHEETS_YEAR'))
+            );
+
+            $date_trimestre = new Carbon($data_fine_trimestre);
+            $date_now = Carbon::now();
+
+            if ($date_trimestre->diff($date_now)->days > 10 &&
+                $date_trimestre->timestamp < $date_now->timestamp) {
+                $iva_trimestre[$k] = 0;
+            }
+
+        }
 
         /**
          * Inserisco i dati in Google Sheets
          */
-        $range = env('GOOGLE_SHEETS_YEAR') . '!' . $k_tot_month_attivo[0] . ':' . $k_tot_month_passivo[count($k_tot_month_passivo) - 1];
+        $data = array();
 
+        // Range delle fatture attive e passive
+        $range = env('GOOGLE_SHEETS_YEAR') . '!' . $k_tot_month_attivo[0] . ':' . $k_tot_month_passivo[count($k_tot_month_passivo) - 1];
         $values = [
             array_values($tot_month_attivo),
             array_values($tot_month_passivo)
         ];
+        $data[] = new \Google_Service_Sheets_ValueRange([
+            'range' => $range,
+            'values' => $values
+        ]);
+
+        // Range dei trimestri IVA da versare
+        foreach (array_chunk($alpha, 3) as $k => $v) {
+
+            // Verifico che il valore del trimestre esista e che sia maggiore di zero,
+            // perché calcolo l'IVA da versare fino ad una settimana dopo la fine del
+            // trimestre, in questo modo se il commercialista comunica un importo
+            // diverso di IVA da versare, quest'ultimo non verrà sovrascritto.
+            if (isset($iva_trimestre[$k]) && abs($iva_trimestre[$k]) > 0) {
+
+                $range = env('GOOGLE_SHEETS_YEAR') . '!' . $v[0] . '7';
+                $values = [
+                    [$iva_trimestre[$k]]
+                ];
+                $data[] = new \Google_Service_Sheets_ValueRange([
+                    'range' => $range,
+                    'values' => $values
+                ]);
+            }
+        }
 
         $client = $this->getClient();
         $service = new \Google_Service_Sheets($client);
         $spreadsheetId = env('GOOGLE_SHEETS_ID');
 
-        $body = new \Google_Service_Sheets_ValueRange([
+        $body = new \Google_Service_Sheets_BatchUpdateValuesRequest([
+            'valueInputOption' => 'RAW',
+            'data' => $data
+        ]);
+
+        $result = $service->spreadsheets_values->batchUpdate($spreadsheetId, $body);
+
+        /*$body = new \Google_Service_Sheets_ValueRange([
             'values' => $values
         ]);
 
@@ -196,8 +252,6 @@ class GoogleSheetsAPI extends Controller
             $range,
             $body,
             $params
-        );
-
-        dd($result);
+        );*/
     }
 }
