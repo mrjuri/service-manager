@@ -101,7 +101,6 @@ class GoogleSheetsAPI extends Controller
 
         // Sistemo l'array dei totali per importarli correttamente in Google Sheets
         $tot_month_attivo = array_reverse($tot_month_attivo, true);
-        $k_tot_month_attivo = array_keys($tot_month_attivo);
 
         // - - -
 
@@ -130,7 +129,6 @@ class GoogleSheetsAPI extends Controller
 
         // Sistemo l'array dei totali per importarli correttamente in Google Sheets
         $tot_month_passivo = array_reverse($tot_month_passivo, true);
-        $k_tot_month_passivo = array_keys($tot_month_passivo);
 
         // - - -
 
@@ -157,6 +155,10 @@ class GoogleSheetsAPI extends Controller
             }
 
         }
+
+        // Sistemo l'array Keys dei totali per importarli correttamente in Google Sheets
+        $k_tot_month_attivo = array_keys($tot_month_attivo);
+        $k_tot_month_passivo = array_keys($tot_month_passivo);
 
         // - - -
 
