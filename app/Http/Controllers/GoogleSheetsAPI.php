@@ -134,6 +134,32 @@ class GoogleSheetsAPI extends Controller
 
         // - - -
 
+        /**
+         * Allineamento Keys dei totali attivi e passivi per mese
+         */
+        if (count($tot_month_attivo) > count($tot_month_passivo)) {
+
+            $count_m = count($tot_month_attivo);
+
+        } else {
+
+            $count_m = count($tot_month_passivo);
+        }
+
+        for ($i = 0; $i < $count_m; $i++) {
+
+            if (!isset($tot_month_attivo[$range_array[$i + 1]['in']])) {
+                $tot_month_attivo[$range_array[$i + 1]['in']] = 0;
+            }
+
+            if (!isset($tot_month_passivo[$range_array[$i + 1]['out']])) {
+                $tot_month_passivo[$range_array[$i + 1]['out']] = 0;
+            }
+
+        }
+
+        // - - -
+
         // Calcolo l'iva per mese
         $iva_count = count($iva_credito) > count($iva_debito) ? count($iva_credito) : count($iva_debito);
         $iva_month = array();
