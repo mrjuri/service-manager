@@ -62,9 +62,9 @@
                                 <li class="nav-item {{ Request::is('customer*') ? 'active' : '' }}">
                                     <a class="nav-link" href="{{ route('customer.list') }}">Clienti</a>
                                 </li>
-                                <li class="nav-item {{ Request::is('setting*') ? 'active' : '' }}">
+                                {{--<li class="nav-item {{ Request::is('setting*') ? 'active' : '' }}">
                                     <a class="nav-link" href="{{ route('setting.create') }}">Impostazioni</a>
-                                </li>
+                                </li>--}}
                             @endif
 
                         </ul>

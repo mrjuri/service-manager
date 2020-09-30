@@ -59,10 +59,10 @@ Route::get('/customer/destroy/{id}', 'Customer@destroy')
 Route::get('/customer/renew/{id}', 'Customer@renew')
      ->name('customer.renew');
 
-Route::get('/setting', 'Setting@create')
+/*Route::get('/setting', 'Setting@create')
      ->name('setting.create');
 Route::post('/setting/store', 'Setting@store')
-     ->name('setting.store');
+     ->name('setting.store');*/
 
 Route::get('/mail/service-expiration/all', 'Email@sendExpirationList')
      ->name('email.exp.all');
