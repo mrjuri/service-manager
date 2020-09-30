@@ -59,6 +59,21 @@ class GoogleSheetsAPI extends Controller
         );
 
         $fic = new FattureInCloudAPI();
+        $ndc_attive = $fic->get(
+            'ndc',
+            'lista',
+            array(
+                'anno' => env('GOOGLE_SHEETS_YEAR'),
+                'data_inizio' => '01/01/' . env('GOOGLE_SHEETS_YEAR'),
+                'data_fine' => '31/12/' . env('GOOGLE_SHEETS_YEAR')
+            )
+        );
+
+        // Fattura in cloud unice Fatture e Note di credito solo per i documenti passivi,
+        // per i documenti attivi li divice, quindi utilizzo array_merge.
+        $fatture_attive = array_merge($fatture_attive, $ndc_attive);
+
+        $fic = new FattureInCloudAPI();
         $fatture_passive = $fic->get(
             'acquisti',
             'lista',
@@ -85,16 +100,30 @@ class GoogleSheetsAPI extends Controller
                 $tot_month_attivo[$range_array[$month_n]['in']] = 0;
             }
 
-            $tot_month_attivo[$range_array[$month_n]['in']] += $fattura['importo_netto'];
-
             // Calcolo tasse (IVA) a debito per mese
             if (!isset($iva_debito[$month_n])) {
                 $iva_debito[$month_n] = 0;
             }
 
-            // Verifica se PA per Split Payment
-            if ($fattura['PA_tipo_cliente'] != 'PA') {
-                $iva_debito[$month_n] += $fattura['importo_totale'] - $fattura['importo_netto'];
+            // Correggo l'importo attivo in base alle note di credito attive
+            switch ($fattura['tipo']) {
+                case 'fatture':
+                    $tot_month_attivo[$range_array[$month_n]['in']] += $fattura['importo_netto'];
+
+                    // Verifica se PA per Split Payment
+                    if ($fattura['PA_tipo_cliente'] != 'PA') {
+                        $iva_debito[$month_n] += $fattura['importo_totale'] - $fattura['importo_netto'];
+                    }
+                    break;
+
+                case 'ndc':
+                    $tot_month_attivo[$range_array[$month_n]['in']] -= $fattura['importo_netto'];
+
+                    // Verifica se PA per Split Payment
+                    if ($fattura['PA_tipo_cliente'] != 'PA') {
+                        $iva_debito[$month_n] -= $fattura['importo_totale'] - $fattura['importo_netto'];
+                    }
+                    break;
             }
 
         }
@@ -116,14 +145,23 @@ class GoogleSheetsAPI extends Controller
                 $tot_month_passivo[$range_array[$month_n]['out']] = 0;
             }
 
-            $tot_month_passivo[$range_array[$month_n]['out']] -= $fattura['importo_netto'];
-
             // Calcolo tasse (IVA) a credito per mese
             if (!isset($iva_credito[$month_n])) {
                 $iva_credito[$month_n] = 0;
             }
 
-            $iva_credito[$month_n] += $fattura['importo_iva'];
+            // Correggo l'importo passivo in base alle note di credito passive
+            switch ($fattura['tipo']) {
+                case 'spesa':
+                    $tot_month_passivo[$range_array[$month_n]['out']] -= $fattura['importo_netto'];
+                    $iva_credito[$month_n] += $fattura['importo_iva'];
+                    break;
+
+                case 'ndc':
+                    $tot_month_passivo[$range_array[$month_n]['out']] += $fattura['importo_netto'];
+                    $iva_credito[$month_n] -= $fattura['importo_iva'];
+                    break;
+            }
 
         }
 

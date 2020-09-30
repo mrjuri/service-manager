@@ -205,7 +205,8 @@ class FattureInCloudAPI extends Controller
 
         if ($resource == 'preventivi' ||
             $resource == 'fatture' ||
-            $resource == 'acquisti') {
+            $resource == 'acquisti' ||
+            $resource == 'ndc') {
             $resource = 'documenti';
         }
 
