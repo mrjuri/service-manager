@@ -31,7 +31,8 @@ class GoogleSheetsAPI extends Controller
         /**
          * Creo un array con la definizione delle celle per mese
          */
-        $alpha = range('B', 'M');
+        $alpha = array('B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M');
+
         $row_in = 3;
         $row_out = 4;
 
