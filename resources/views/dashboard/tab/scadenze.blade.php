@@ -20,7 +20,7 @@
 
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()
-        })
+        });
 
     };
 
@@ -304,19 +304,42 @@
 
                     @csrf
 
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               id="paymentSwitch"
-                               name="pagamento_saldato"
-                               value="1"
-                               checked>
-                        <label class="custom-control-label" for="paymentSwitch">
-                            Pagamento ricevuto.
-                            <br>
-                            <small>(se lo switch è attivo, la fattura risulterà saldata)</small>
-                        </label>
+                    <div class="row">
+                        <div class="col-lg-6">
+
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <i class="far fa-calendar-alt"></i>
+                                    </div>
+                                </div>
+                                <input type="text"
+                                       class="form-control text-center"
+                                       name="date_doc"
+                                       value="<?php echo date('d/m/Y'); ?>"
+                                       placeholder="dd/mm/yyyy">
+                            </div>
+
+                        </div>
+                        <div class="col-lg-6">
+
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="paymentSwitch"
+                                       name="pagamento_saldato"
+                                       value="1"
+                                       checked>
+                                <label class="custom-control-label" for="paymentSwitch">
+                                    Pagamento ricevuto.
+                                    <br>
+                                    <small>(se lo switch è attivo, la fattura risulterà saldata)</small>
+                                </label>
+                            </div>
+
+                        </div>
                     </div>
+
 
                     <hr>
 

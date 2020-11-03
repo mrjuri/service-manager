@@ -27,6 +27,7 @@ class FattureInCloudAPI extends Controller
     {
         $customer_service_id = $request->input('customer_service_id');
         $pagamento_saldato = $request->input('pagamento_saldato');
+        $date_doc = $request->input('date_doc');
 
         /*$info_account = $this->api(
             'info/account',
@@ -131,6 +132,7 @@ class FattureInCloudAPI extends Controller
             array(
                 'nome' => $customer_service->customer_name ? $customer_service->customer_name : $customer_service->customer->name,
                 'piva' => $customer_service->piva ? $customer_service->piva : $customer_service->customer->piva,
+                'data' => $date_doc,
                 'autocompila_anagrafica' => true,
                 'mostra_info_pagamento' => true,
                 'metodo_id' => env('FIC_metodo_id'),
@@ -140,10 +142,10 @@ class FattureInCloudAPI extends Controller
                 'lista_articoli' => $lista_articoli,
                 'lista_pagamenti' => array(
                     array(
-                        'data_scadenza' => date('d/m/Y'),
+                        'data_scadenza' => $date_doc,
                         'importo' => 'auto',
                         'metodo' => $pagamento_saldato == 1 ? env('FIC_metodo_nome') : 'not',
-                        'data_saldo' => date('d/m/Y'),
+                        'data_saldo' => $date_doc,
                     )
                 )
             )
@@ -180,8 +182,17 @@ class FattureInCloudAPI extends Controller
 
         if ($fattura_inviamail['success'] == true) {
 
+            /**
+             * Rinnova servizio
+             */
             $customer = new Customer();
             $customer->renew_service($customer_service_id);
+
+            /**
+             * Aggiorna GSheets
+             */
+            $gSheets = new GoogleSheetsAPI();
+            $gSheets->update();
 
             return redirect()->route('home');
         }
