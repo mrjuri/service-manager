@@ -16,6 +16,14 @@
                 ObjBtnConf.attr('href', $(e.relatedTarget).data('href'));
             }
 
+            $('#send_email').val(1);
+
+        });
+
+        $('.modal').on('click', '.btn-noSendEmail', function (){
+
+            $('#send_email').val(0);
+
         });
 
         $(function () {
@@ -290,32 +298,20 @@
             </div>
             <div class="modal-body">
 
-                <br><br>
-
-                <div class="text-center">
-                    Vuoi <strong>inviare la fattura</strong> al cliente?
-                </div>
-
-                <br><br>
-
-                <hr>
-
                 <form action="{{ route('fattureincloud.api.create') }}" method="post">
 
                     @csrf
 
+
                     <div class="row">
                         <div class="col-lg-6">
 
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">
-                                        <i class="far fa-calendar-alt"></i>
-                                    </div>
-                                </div>
+                            <div class="form-group">
+                                <label for="date_doc">Data fattura</label>
                                 <input type="text"
                                        class="form-control text-center"
                                        name="date_doc"
+                                       id="date_doc"
                                        value="<?php echo date('d/m/Y'); ?>"
                                        placeholder="dd/mm/yyyy">
                             </div>
@@ -340,7 +336,6 @@
                         </div>
                     </div>
 
-
                     <hr>
 
                     <small>
@@ -351,20 +346,36 @@
 
                     <hr>
 
+                    <br>
+
+                    <div class="text-center">
+                        Vuoi <strong>inviare la fattura</strong> al cliente?
+                    </div>
+
+                    <br>
+
+                    <hr>
+
                     <div class="row">
                         <div class="col-lg-6">
 
-                            <button type="submit" class="btn btn-success btn-block">Sì</button>
-
-                            <input type="hidden" name="customer_service_id" id="customer_service_id" value="">
+                            <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">Annulla</button>
 
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-3">
 
-                            <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">No</button>
+                            <button type="submit" class="btn btn-danger btn-block btn-noSendEmail">No</button>
+
+                        </div>
+                        <div class="col-lg-3">
+
+                            <button type="submit" class="btn btn-success btn-block">Sì</button>
 
                         </div>
                     </div>
+
+                    <input type="hidden" name="customer_service_id" id="customer_service_id" value="">
+                    <input type="hidden" name="send_email" id="send_email" value="1">
 
                 </form>
 

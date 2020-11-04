@@ -28,6 +28,7 @@ class FattureInCloudAPI extends Controller
         $customer_service_id = $request->input('customer_service_id');
         $pagamento_saldato = $request->input('pagamento_saldato');
         $date_doc = $request->input('date_doc');
+        $send_email = $request->input('send_email');
 
         /*$info_account = $this->api(
             'info/account',
@@ -153,7 +154,7 @@ class FattureInCloudAPI extends Controller
 
         $fattura_inviamail = 0;
 
-        if ($fattura_nuova['success'] == 1) {
+        if ($fattura_nuova['success'] == 1 && $send_email == 1) {
 
             /**
              * Fatture in Cloud
@@ -180,7 +181,7 @@ class FattureInCloudAPI extends Controller
             );
         }
 
-        if ($fattura_inviamail['success'] == true) {
+        if ($fattura_inviamail['success'] == true || $send_email == 0) {
 
             /**
              * Rinnova servizio
