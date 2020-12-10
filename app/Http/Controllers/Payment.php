@@ -73,9 +73,12 @@ class Payment extends Controller
 
             foreach ($customers_services_details as $customer_service_detail) {
 
-                if (!isset($array_services_rows[$customer_service_detail->service->name_customer_view])) {
+                $index = $customer_service_detail->service_id . $customer_service_detail->price_sell;
 
-                    $array_services_rows[$customer_service_detail->service->name_customer_view] = array(
+                if (!isset($array_services_rows[$index])) {
+
+                    $array_services_rows[$index] = array(
+                        'name' => $customer_service_detail->service->name_customer_view,
                         'price_sell' => $customer_service_detail->service->price_sell,
                         'price_customer_sell' => $customer_service_detail->price_sell,
                         'is_share' => $customer_service_detail->service->is_share,
@@ -84,7 +87,7 @@ class Payment extends Controller
 
                 }
 
-                $array_services_rows[$customer_service_detail->service->name_customer_view]['reference'][] = $customer_service_detail->reference;
+                $array_services_rows[$index]['reference'][] = $customer_service_detail->reference;
             }
 
             $fattureincloud = new FattureInCloudAPI();

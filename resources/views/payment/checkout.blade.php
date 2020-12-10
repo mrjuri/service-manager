@@ -320,12 +320,12 @@
                                 @php($discount_alert = 0)
                                 @if($v['price_sell'] > $v['price_customer_sell'] && $v['is_share'] != 1)
                                     @php($discount_alert = 1)
-                                    @php($discount = $v['price_sell'] - $v['price_customer_sell'])
+                                    @php($discount = (($v['price_sell'] - $v['price_customer_sell']) * count($v['reference'])))
                                 @endif
 
                                 <tr>
                                     <td>
-                                        {{ $k }}
+                                        {{ $v['name'] }}
                                     </td>
                                     <td class="text-center">
                                         <small>
