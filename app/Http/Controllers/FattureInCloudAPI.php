@@ -64,7 +64,9 @@ class FattureInCloudAPI extends Controller
 
         foreach ($customers_services_details as $customer_service_detail) {
 
-            if (!isset($array_rows[$customer_service_detail->service->name_customer_view])) {
+            $index = $customer_service_detail->service_id . $customer_service_detail->price_sell;
+
+            if (!isset($array_rows[$index])) {
 
                 /**
                  * Ricerca corrispondenza con l'ID del prodotto di Fatture in Cloud
@@ -87,17 +89,18 @@ class FattureInCloudAPI extends Controller
                 /**
                  * Array con i valori da inserire nella riga prodotto
                  */
-                $array_rows[$customer_service_detail->service->name_customer_view] = array(
+                $array_rows[$index] = array(
                     'fic_id' => $fic_prodotto_id,
                     'fic_cod' => $fic_prodotto_cod,
                     'fic_categoria' => $fic_prodotto_categoria,
+                    'fic_nome' => $customer_service_detail->service->name_customer_view,
                     'price_sell' => $customer_service_detail->price_sell,
                     'reference' => array()
                 );
 
             }
 
-            $array_rows[$customer_service_detail->service->name_customer_view]['reference'][] = $customer_service_detail->reference;
+            $array_rows[$index]['reference'][] = $customer_service_detail->reference;
         }
 
         /**
@@ -115,7 +118,7 @@ class FattureInCloudAPI extends Controller
                 'id' => $a['fic_id'],
                 'codice' => $a['fic_cod'],
                 'categoria' => $a['fic_categoria'],
-                'nome' => $k,
+                'nome' => $a['fic_nome'],
                 'descrizione' => $desc,
                 'quantita' => count($a['reference']),
                 'prezzo_netto' => $a['price_sell'],
