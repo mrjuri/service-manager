@@ -106,7 +106,7 @@
 
                             <tr>
                                 <td>
-                                    {{ $k }}
+                                    {{ $v['name'] }}
                                 </td>
                                 <td class="text-center">
                                     <small>

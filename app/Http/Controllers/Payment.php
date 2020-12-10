@@ -122,14 +122,17 @@ class Payment extends Controller
 
         foreach ($services->details as $detail) {
 
-            if (!isset($array_services_rows[$detail->service->name_customer_view])) {
-                $array_services_rows[$detail->service->name_customer_view] = array(
+            $index = $detail->service_id . $detail->price_sell;
+
+            if (!isset($array_services_rows[$index])) {
+                $array_services_rows[$index] = array(
+                    'name' => $detail->service->name_customer_view,
                     'price_sell' => $detail->price_sell,
                     'reference' => array(),
                 );
             }
 
-            $array_services_rows[$detail->service->name_customer_view]['reference'][] = $detail->reference;
+            $array_services_rows[$index]['reference'][] = $detail->reference;
 
         }
 
