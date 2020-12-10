@@ -139,6 +139,10 @@ class Payment extends Controller
 
         }
 
+        uasort($array_services_rows, function ($a, $b) {
+            return $b['price_sell'] <=> $a['price_sell'];
+        });
+
         $email = new Email();
         $str_replace_array = $email->get_data_template_replace($sid, '');
         $payment_info = Storage::disk('public')->get('payment/' . $payment->type . '.html');
