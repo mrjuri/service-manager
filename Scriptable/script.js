@@ -61,8 +61,7 @@ async function createWidget(items)
     let monthDownLegend = rightContainer.addText('uscite')
     monthDownLegend.font = Font.systemFont(12)
 
-//     let interval = 1000 * 60 * 60 * 1
-    let interval = 1000 * 60 * 3
+    let interval = 1000 * 60 * 60 * 1
     widget.refreshAfterDate = new Date(Date.now() + interval)
 
     return widget
