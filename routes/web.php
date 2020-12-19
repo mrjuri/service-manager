@@ -82,4 +82,6 @@ Route::get('/payment/confirm/{sid}', 'Payment@confirm')
      ->name('payment.confirm');
 
 Route::get('/gsheets/update', 'GoogleSheetsAPI@update');
-//Route::get('/gsheets/scriptable', 'GoogleSheetsAPI@scriptableJSON');
+//Route::get('/gsheets/scriptable', 'GoogleSheetsAPI@scriptableWriteJSON');
+
+Route::get('/scriptable/json', 'GoogleSheetsAPI@scriptableGetJSON');

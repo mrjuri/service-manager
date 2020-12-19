@@ -321,10 +321,10 @@ class GoogleSheetsAPI extends Controller
             $params
         );*/
 
-        $this->scriptableJSON();
+        $this->scriptableWriteJSON();
     }
 
-    public function scriptableJSON()
+    public function scriptableWriteJSON()
     {
         $alpha = array('B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M');
 
@@ -368,5 +368,10 @@ class GoogleSheetsAPI extends Controller
         );
 
         Storage::disk('public')->put('scriptable.json', json_encode($dataArray));
+    }
+
+    public function scriptableGetJSON()
+    {
+        return Storage::disk('public')->get('scriptable.json');
     }
 }
