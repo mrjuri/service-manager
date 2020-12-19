@@ -320,5 +320,53 @@ class GoogleSheetsAPI extends Controller
             $body,
             $params
         );*/
+
+        $this->scriptableJSON();
+    }
+
+    public function scriptableJSON()
+    {
+        $alpha = array('B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M');
+
+        $row_in = 3;
+        $row_out = 4;
+        $row_profit = 16;
+
+        $client = $this->getClient();
+        $service = new \Google_Service_Sheets($client);
+        $spreadsheetId = env('GOOGLE_SHEETS_ID');
+
+        $c = 0;
+
+        foreach (array_chunk($alpha, 3) as $k => $v) {
+
+            $c += 3;
+
+            if ($c > date('m') - 1) {
+                $periodo = $k + 1;
+                $alphaUtile = $v[0];
+                break;
+            }
+        }
+
+        $params = array(
+            'ranges' => [
+                env('GOOGLE_SHEETS_YEAR') . '!' . $alpha[date('m') - 1] . $row_in,
+                env('GOOGLE_SHEETS_YEAR') . '!' . $alpha[date('m') - 1] . $row_out,
+                env('GOOGLE_SHEETS_YEAR') . '!' . $alphaUtile . $row_profit,
+            ]
+        );
+        $result = $service->spreadsheets_values->batchGet($spreadsheetId, $params);
+
+        $dataArray = array(
+            'trimestre' => array(
+                'periodo' => $periodo,
+                'value' => $result->valueRanges[2]->values[0][0],
+            ),
+            'entrate' => $result->valueRanges[0]->values[0][0],
+            'uscite' => $result->valueRanges[1]->values[0][0],
+        );
+
+        Storage::disk('public')->put('scriptable.json', json_encode($dataArray));
     }
 }

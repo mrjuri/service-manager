@@ -15,13 +15,13 @@ async function createWidget(items)
 
     let widget = new ListWidget()
 
-    let trimValue = widget.addText('€ ' + json[0].trimestre[0].value)
+    let trimValue = widget.addText(json.trimestre.value)
     trimValue.font = Font.title2()
     trimValue.centerAlignText()
 
     widget.addSpacer(5)
 
-    let trimLegend = widget.addText('utile ' + json[0].trimestre[0].periodo + '° trimestre')
+    let trimLegend = widget.addText('utile ' + json.trimestre.periodo + '° trimestre')
     trimLegend.font = Font.systemFont(12)
     trimLegend.centerAlignText()
 
@@ -36,7 +36,7 @@ async function createWidget(items)
     leftContainer.setPadding(10, 10, 10, 10)
     leftContainer.layoutVertically()
 
-    let monthUpValue = leftContainer.addText('€ ' + json[0].entrate)
+    let monthUpValue = leftContainer.addText(json.entrate)
     monthUpValue.font = Font.boldSystemFont(16)
 
     leftContainer.addSpacer(5)
@@ -53,7 +53,7 @@ async function createWidget(items)
     rightContainer.setPadding(10, 10, 10, 10)
     rightContainer.layoutVertically()
 
-    let monthDownValue = rightContainer.addText('€ ' + json[0].uscite)
+    let monthDownValue = rightContainer.addText(json.uscite)
     monthDownValue.font = Font.boldSystemFont(16)
 
     rightContainer.addSpacer(5)
