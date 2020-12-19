@@ -330,7 +330,7 @@ class GoogleSheetsAPI extends Controller
 
         $row_in = 3;
         $row_out = 4;
-        $row_profit = 16;
+        $row_profit = 17;
 
         $client = $this->getClient();
         $service = new \Google_Service_Sheets($client);
