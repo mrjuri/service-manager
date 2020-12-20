@@ -10,6 +10,15 @@ Script.complete()
 
 async function createWidget(items)
 {
+    switch(Device.model()) {
+        case 'iPad':
+            stackWidth = 138;
+            break;
+        case 'iPhone':
+            stackWidth = 138;
+            break;
+    }
+
     /**
      * Read JSON data
      * @type {Request}
@@ -22,6 +31,7 @@ async function createWidget(items)
      * @type {ListWidget}
      */
     let widget = new ListWidget()
+    widget.backgroundColor = Color.dynamic(Color.white(), new Color('1e1e1e'))
 
     /**
      * Add to Widget main data
@@ -44,7 +54,7 @@ async function createWidget(items)
     let stackContainer = widget.addStack()
 
     let leftContainer = stackContainer.addStack()
-    leftContainer.size = new Size(138, 0)
+    leftContainer.size = new Size(stackWidth, 0)
     leftContainer.cornerRadius = 10
     leftContainer.backgroundColor = Color.green()
     leftContainer.setPadding(10, 10, 10, 10)
@@ -69,7 +79,7 @@ async function createWidget(items)
      * Add right Stack into Widget
      */
     let rightContainer = stackContainer.addStack()
-    rightContainer.size = new Size(138, 0)
+    rightContainer.size = new Size(stackWidth, 0)
     rightContainer.cornerRadius = 10
     rightContainer.backgroundColor = Color.red()
     rightContainer.setPadding(10, 10, 10, 10)
