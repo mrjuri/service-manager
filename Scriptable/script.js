@@ -13,9 +13,11 @@ async function createWidget(items)
     switch(Device.model()) {
         case 'iPad':
             stackWidth = 148;
+            widgetBgColor = '#1e1e1e';
             break;
         case 'iPhone':
             stackWidth = 138;
+            widgetBgColor = '#2c2c2e';
             break;
     }
 
@@ -31,7 +33,7 @@ async function createWidget(items)
      * @type {ListWidget}
      */
     let widget = new ListWidget()
-    widget.backgroundColor = Color.dynamic(Color.white(), new Color('2c2c2e'))
+    widget.backgroundColor = Color.dynamic(Color.white(), new Color(widgetBgColor))
 
     /**
      * Add to Widget main data
