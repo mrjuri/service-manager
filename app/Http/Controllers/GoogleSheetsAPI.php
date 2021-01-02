@@ -324,8 +324,15 @@ class GoogleSheetsAPI extends Controller
         $this->scriptableWriteJSON();
     }
 
+    /**
+     * Scrivo il file JSON per essere letto da Scriptable
+     * così da poter usare la widget sul iSO e MacOS
+     */
     public function scriptableWriteJSON()
     {
+        // Mostro i dati del trimestre per almeno 10 giorni passato il trimestre,
+        // così da poter modificare eventuali contabilità e poterle avere sempre sotto controllo.
+        $timeJSON = mktime(0, 0, 0, date('m'), -10, env('GOOGLE_SHEETS_YEAR'));
         $alpha = array('B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M');
 
         $row_in = 3;
@@ -342,7 +349,7 @@ class GoogleSheetsAPI extends Controller
 
             $c += 3;
 
-            if ($c > date('m') - 1) {
+            if ($c > date('m', $timeJSON) - 1) {
                 $periodo = $k + 1;
                 $alphaUtile = $v[0];
                 break;
@@ -351,8 +358,8 @@ class GoogleSheetsAPI extends Controller
 
         $params = array(
             'ranges' => [
-                env('GOOGLE_SHEETS_YEAR') . '!' . $alpha[date('m') - 1] . $row_in,
-                env('GOOGLE_SHEETS_YEAR') . '!' . $alpha[date('m') - 1] . $row_out,
+                env('GOOGLE_SHEETS_YEAR') . '!' . $alpha[date('m', $timeJSON) - 1] . $row_in,
+                env('GOOGLE_SHEETS_YEAR') . '!' . $alpha[date('m', $timeJSON) - 1] . $row_out,
                 env('GOOGLE_SHEETS_YEAR') . '!' . $alphaUtile . $row_profit,
             ]
         );
