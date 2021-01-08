@@ -374,7 +374,16 @@ class GoogleSheetsAPI extends Controller
             'uscite' => $result->valueRanges[1]->values[0][0],
         );
 
-        Storage::disk('public')->put('scriptable.json', json_encode($dataArray));
+        /**
+         * Per esempio se siamo nell'ultimo trimestre e inizia il nuovo anno, per 10 giorni il JSON
+         * deve mostrare i dati dell'ultimo trimestre dell'anno precedente.
+         */
+        if (preg_replace('/\D/', '', $dataArray['entrate']) != ''
+            || preg_replace('/\D/', '', $dataArray['uscite']) != '') {
+
+            Storage::disk('public')->put('scriptable.json', json_encode($dataArray));
+
+        }
     }
 
     public function scriptableGetJSON()
