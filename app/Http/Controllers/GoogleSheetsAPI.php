@@ -332,7 +332,7 @@ class GoogleSheetsAPI extends Controller
     {
         // Mostro i dati del trimestre per almeno 10 giorni passato il trimestre,
         // così da poter modificare eventuali contabilità e poterle avere sempre sotto controllo.
-        $timeJSON = mktime(0, 0, 0, date('m'), -10, env('GOOGLE_SHEETS_YEAR'));
+        $timeJSON = mktime(0, 0, 0, date('m'), (date('d') - 10), env('GOOGLE_SHEETS_YEAR'));
         $alpha = array('B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M');
 
         $row_in = 3;
