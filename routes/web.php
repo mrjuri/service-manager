@@ -13,23 +13,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-$user = \App\Model\User::take(1)->first();
+try {
 
-Auth::routes([
-    'register' => !$user ? true : false,
-    'reset' => false,
-]);
+    $user = \App\Model\User::take(1)->first();
 
-if (!$user) {
-    Route::get('/', function (){
-        return redirect('/register');
-    })->name('home');
+    Auth::routes([
+        'register' => !$user ? true : false,
+        'reset' => false,
+    ]);
 
-} else {
+    if (!$user) {
+        Route::get('/', function (){
+            return redirect('/register');
+        })->name('home');
 
-    Route::get('/', 'Dashboard@view')
-         ->name('home');
-}
+    } else {
+
+        Route::get('/', 'Dashboard@view')
+             ->name('home');
+    }
+
+} catch (Exception $e) {}
 
 Route::get('/service', 'Service@index')
      ->name('service.list');
