@@ -109,6 +109,40 @@ class Email extends Controller
         return redirect()->route('home');
     }
 
+    public function sendDestroy($id)
+    {
+        $payment = new Payment();
+        $sid = $payment->sid_create($id);
+        $payment->customerServiceDestroySet($sid);
+
+        $html = Storage::disk('public')->get('mail_template/confirm-destroy.html');
+        $content = $this->get_template($sid, 'confirm-destroy', $html);
+        $data_array = $this->get_data($id);
+
+        $email_array = explode(';', $data_array['to']);
+
+        $mail = Mail::to($email_array[0]);
+
+        if (count($email_array) > 0) {
+
+            foreach ($email_array as $k => $email) {
+                if ($k > 0) {
+                    $mail->cc($email);
+                }
+            }
+
+        }
+
+        if (env('MAIL_BCC_ADDRESS')) {
+            $mail->bcc(env('MAIL_BCC_ADDRESS'));
+        }
+
+        $mail->send(new Service(
+            $data_array['subject_destroy'],
+            $content
+        ));
+    }
+
     /**
      * Dopo aver confermato il rinnovo, viene inviata questa email di conferma.
      * @param $sid
@@ -214,6 +248,7 @@ class Email extends Controller
             'to' => $customer_service->email ? $customer_service->email : $customer_service->customer->email,
             'subject_expiration' => '[' . $customer_service->reference . '] - ' . $customer_service->name . ' in scadenza',
             'subject_confirm_bonifico' => '[' . $customer_service->reference . '] - Richiesta bonifico bancario ' . $customer_service->name,
+            'subject_destroy' => '[' . $customer_service->reference . '] - ' . $customer_service->name . ' disdetta',
         );
 
         return $array;
@@ -234,7 +269,12 @@ class Email extends Controller
                                              ->with('details')
                                              ->find($payment->customer_service_id);
 
+        if (!$customer_service) {
+            $customer_service = json_decode($payment->services);
+        }
+
         $price_sell_tot = 0;
+
         foreach ($customer_service->details as $detail) {
             $price_sell_tot += $detail->price_sell;
         }
@@ -251,6 +291,7 @@ class Email extends Controller
                     <div class="date-exp-msg">(data di scadenza e disattivazione dei servizi)</div>
                 </div>
             ',
+            '[customers_services-list]' => $this->customersServicesList($sid),
             '[customers_services-total_]' => $price_sell_tot,
 
             'http://[customers_services-link_]' => '[customers_services-link_]',
@@ -266,6 +307,46 @@ class Email extends Controller
         );
 
         return $str_replace_array;
+    }
+
+    public function customersServicesList($sid)
+    {
+        $payment = new Payment();
+        $customerServiceInfo = $payment->customerServiceInfo($sid);
+
+        $out = '
+                <table style="width: 100%;">
+                    <thead>
+                    <tr>
+                        <th>Servizio</th>
+                        <th>Riferimento</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                ';
+
+        foreach ($customerServiceInfo['array_services_rows'] as $k => $v)
+        {
+            $out .= '<tr>';
+            $out .= '<td>';
+            $out .= $v['name'];
+
+            if(count($v['reference']) > 1) {
+                $out .= '<small> x ' . count($v['reference']) . '</small>';
+            }
+
+            $out .= '</td>';
+            $out .= '<td>'. $v['reference'][0] .'</td>';
+            $out .= '</tr>';
+        }
+
+        $out .= '
+                    </tbody>
+                </table>
+                ';
+
+        return $out;
     }
 
     /**

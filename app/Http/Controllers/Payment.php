@@ -119,7 +119,7 @@ class Payment extends Controller
      */
     public function confirm($sid)
     {
-        $payment = \App\Model\Payment::firstWhere('sid', $sid);
+        /*$payment = \App\Model\Payment::firstWhere('sid', $sid);
 
         $services = json_decode($payment->services);
 
@@ -141,11 +141,13 @@ class Payment extends Controller
 
         uasort($array_services_rows, function ($a, $b) {
             return $b['price_sell'] <=> $a['price_sell'];
-        });
+        });*/
+
+        $customerServiceInfo = $this->customerServiceInfo($sid);
 
         $email = new Email();
         $str_replace_array = $email->get_data_template_replace($sid, '');
-        $payment_info = Storage::disk('public')->get('payment/' . $payment->type . '.html');
+        $payment_info = Storage::disk('public')->get('payment/' . $customerServiceInfo['payment']->type . '.html');
 
         foreach ($str_replace_array as $k => $v) {
 
@@ -154,9 +156,9 @@ class Payment extends Controller
         }
 
         return view('payment.confirm', [
-            'payment' => $payment,
-            'service' => json_decode($payment->services),
-            'array_services_rows' => $array_services_rows,
+            'payment' => $customerServiceInfo['payment'],
+            'service' => $customerServiceInfo['service_json'],
+            'array_services_rows' => $customerServiceInfo['array_services_rows'],
             'payment_info' => $payment_info
         ]);
     }
@@ -243,5 +245,63 @@ class Payment extends Controller
         }
 
         return $payment->sid;
+    }
+
+    public function customerServiceInfo($sid)
+    {
+        $payment = \App\Model\Payment::firstWhere('sid', $sid);
+
+        $services = json_decode($payment->services);
+
+        foreach ($services->details as $detail) {
+
+            $index = $detail->service_id . $detail->price_sell;
+
+            if (!isset($array_services_rows[$index])) {
+                $array_services_rows[$index] = array(
+                    'name' => $detail->service->name_customer_view,
+                    'price_sell' => $detail->price_sell,
+                    'reference' => array(),
+                );
+            }
+
+            $array_services_rows[$index]['reference'][] = $detail->reference;
+
+        }
+
+        uasort($array_services_rows, function ($a, $b) {
+            return $b['price_sell'] <=> $a['price_sell'];
+        });
+
+        return [
+            'payment' => $payment,
+            'service_json' => json_decode($payment->services),
+            'array_services_rows' => $array_services_rows
+        ];
+    }
+
+    public function customerServiceDestroySet($sid)
+    {
+        $payment = \App\Model\Payment::where('type', '')->firstWhere('sid', $sid);
+
+        if ($payment) {
+
+            $customer_service = CustomersServices::with('customer')
+                                                 ->with('details')
+                                                 ->with('details.service')
+                                                 ->find($payment->customer_service_id);
+
+            $amount = 0;
+            foreach ($customer_service->details as $detail) {
+                $amount += $detail->price_sell;
+            }
+
+            $payment->type = 'destroy';
+            $payment->payment_date = Carbon::now();
+            $payment->amount = $amount;
+            $payment->services = \GuzzleHttp\json_encode($customer_service);
+            $payment->save();
+
+        }
     }
 }

@@ -392,6 +392,9 @@ class Customer extends Controller
      */
     public function serviceDestroy(Request $request, $id)
     {
+        $email = new Email();
+        $email->sendDestroy($id);
+
         CustomersServices::destroy($id);
         CustomersServicesDetails::where('customer_service_id', $id)->delete();
 
