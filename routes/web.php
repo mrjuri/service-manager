@@ -63,6 +63,9 @@ Route::get('/customer/destroy/{id}', 'Customer@destroy')
 Route::get('/customer/renew/{id}', 'Customer@renew')
      ->name('customer.renew');
 
+Route::get('/customer/service/destroy/{id}', 'Customer@serviceDestroy')
+     ->name('customer.service.destroy');
+
 /*Route::get('/setting', 'Setting@create')
      ->name('setting.create');
 Route::post('/setting/store', 'Setting@store')

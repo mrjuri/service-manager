@@ -381,4 +381,20 @@ class Customer extends Controller
 
         return redirect()->route('home');
     }
+
+    /**
+     * Elimino il servizio con i dettagli collegati.
+     *
+     * @param Request $request
+     * @param $id
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function serviceDestroy(Request $request, $id)
+    {
+        CustomersServices::destroy($id);
+        CustomersServicesDetails::where('customer_service_id', $id)->delete();
+
+        return redirect()->route('customer.edit', $request->input('cid'));
+    }
 }

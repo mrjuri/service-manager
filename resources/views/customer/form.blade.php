@@ -8,6 +8,13 @@
         window.onload = function() {
 
             /**
+             * Modal delete alert
+             */
+            $('#deleteModal').on('show.bs.modal', function(e) {
+                $(this).find('#btn-del').attr('href', $(e.relatedTarget).data('href'));
+            });
+
+            /**
              * Imposto le variabili con Array bidimensionali
              */
             function fixIndex()
@@ -105,8 +112,9 @@
 
     </script>
 
-{{--    <a href="{{ route('customer.list') }}" class="btn btn-primary">Indietro</a>--}}
-    <a href="javascript: history.go(-1);" class="btn btn-primary">Indietro</a>
+    <a href="{{ route('customer.list') }}{{ app('request')->session()->get('sc') ? '/?s=' . app('request')->session()->get('sc') : '' }}"
+       class="btn btn-primary">Indietro</a>
+{{--    <a href="javascript: history.go(-1);" class="btn btn-primary">Indietro</a>--}}
 
     <br /><br />
 
@@ -210,7 +218,7 @@
                                     @endif />
 
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-3">
 
                                 <input type="text"
                                        class="form-control"
@@ -261,6 +269,17 @@
                                    href="{{ route('email.exp', [$customer->id, $customerService->id]) }}">
                                     <i class="fas fa-at"></i>
                                 </a>--}}
+
+                            </div>
+                            <div class="col-lg-1">
+
+                                <button type="button"
+                                        class="btn btn-block btn-danger"
+                                        data-toggle="modal"
+                                        data-target="#deleteModal"
+                                        data-href="{{ route('customer.service.destroy', $customerService->id) }}/?cid={{ $customer->id }}">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
 
                             </div>
                         </div>
@@ -430,5 +449,38 @@
 
         <button type="submit" class="btn btn-primary">Salva</button>
     </form>
+
+    <!-- Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Elimina</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Confermi l'eminazione?
+
+                    <br /><br />
+
+                    <div class="row">
+                        <div class="col-lg-6">
+
+                            <a href="#" id="btn-del" class="btn btn-danger btn-block">Sì</a>
+
+                        </div>
+                        <div class="col-lg-6">
+
+                            <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">No</button>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
 
 @endsection
