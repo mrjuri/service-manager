@@ -248,7 +248,7 @@ class Email extends Controller
             'to' => $customer_service->email ? $customer_service->email : $customer_service->customer->email,
             'subject_expiration' => '[' . $customer_service->reference . '] - ' . $customer_service->name . ' in scadenza',
             'subject_confirm_bonifico' => '[' . $customer_service->reference . '] - Richiesta bonifico bancario ' . $customer_service->name,
-            'subject_destroy' => '[' . $customer_service->reference . '] - ' . $customer_service->name . ' disdetta',
+            'subject_destroy' => '[' . $customer_service->reference . '] - disdetta ' . $customer_service->name,
         );
 
         return $array;
