@@ -253,31 +253,35 @@ class Payment extends Controller
 
         $services = json_decode($payment->services);
 
-        foreach ($services->details as $detail) {
+        if ($services) {
 
-            $index = $detail->service_id . $detail->price_sell;
+            foreach ($services->details as $detail) {
 
-            if (!isset($array_services_rows[$index])) {
-                $array_services_rows[$index] = array(
-                    'name' => $detail->service->name_customer_view,
-                    'price_sell' => $detail->price_sell,
-                    'reference' => array(),
-                );
+                $index = $detail->service_id . $detail->price_sell;
+
+                if (!isset($array_services_rows[$index])) {
+                    $array_services_rows[$index] = array(
+                        'name' => $detail->service->name_customer_view,
+                        'price_sell' => $detail->price_sell,
+                        'reference' => array(),
+                    );
+                }
+
+                $array_services_rows[$index]['reference'][] = $detail->reference;
+
             }
 
-            $array_services_rows[$index]['reference'][] = $detail->reference;
+            uasort($array_services_rows, function ($a, $b) {
+                return $b['price_sell'] <=> $a['price_sell'];
+            });
+
+            return [
+                'payment' => $payment,
+                'service_json' => json_decode($payment->services),
+                'array_services_rows' => $array_services_rows
+            ];
 
         }
-
-        uasort($array_services_rows, function ($a, $b) {
-            return $b['price_sell'] <=> $a['price_sell'];
-        });
-
-        return [
-            'payment' => $payment,
-            'service_json' => json_decode($payment->services),
-            'array_services_rows' => $array_services_rows
-        ];
     }
 
     public function customerServiceDestroySet($sid)

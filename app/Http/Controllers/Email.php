@@ -314,7 +314,9 @@ class Email extends Controller
         $payment = new Payment();
         $customerServiceInfo = $payment->customerServiceInfo($sid);
 
-        $out = '
+        if ($customerServiceInfo) {
+
+            $out = '
                 <table style="width: 100%;">
                     <thead>
                     <tr>
@@ -326,27 +328,28 @@ class Email extends Controller
                     <tbody>
                 ';
 
-        foreach ($customerServiceInfo['array_services_rows'] as $k => $v)
-        {
-            $out .= '<tr>';
-            $out .= '<td>';
-            $out .= $v['name'];
+            foreach ($customerServiceInfo['array_services_rows'] as $k => $v)
+            {
+                $out .= '<tr>';
+                $out .= '<td>';
+                $out .= $v['name'];
 
-            if(count($v['reference']) > 1) {
-                $out .= '<small> x ' . count($v['reference']) . '</small>';
+                if(count($v['reference']) > 1) {
+                    $out .= '<small> x ' . count($v['reference']) . '</small>';
+                }
+
+                $out .= '</td>';
+                $out .= '<td>'. $v['reference'][0] .'</td>';
+                $out .= '</tr>';
             }
 
-            $out .= '</td>';
-            $out .= '<td>'. $v['reference'][0] .'</td>';
-            $out .= '</tr>';
-        }
-
-        $out .= '
+            $out .= '
                     </tbody>
                 </table>
                 ';
 
-        return $out;
+            return $out;
+        }
     }
 
     /**
