@@ -330,7 +330,7 @@ class Email extends Controller
 
             foreach ($customerServiceInfo['array_services_rows'] as $k => $v)
             {
-                $out .= '<tr>';
+                $out .= '<tr style="border-bottom: 1px solid #fdd;">';
                 $out .= '<td>';
                 $out .= $v['name'];
 
@@ -339,7 +339,13 @@ class Email extends Controller
                 }
 
                 $out .= '</td>';
-                $out .= '<td>'. $v['reference'][0] .'</td>';
+                $out .= '<td>';
+
+                $reference_unique = array_unique($v['reference']);
+
+                $out .= implode('<br>', $reference_unique);
+
+                $out .= '</td>';
                 $out .= '</tr>';
             }
 
