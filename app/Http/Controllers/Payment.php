@@ -98,6 +98,17 @@ class Payment extends Controller
                 )
             );
 
+            if (count($cliente['lista_clienti']) < 1) {
+
+                $cliente = $fattureincloud->api(
+                    'clienti/lista',
+                    array(
+                        'cf' => $customer_service->piva ? $customer_service->piva : $customer_service->customer->piva
+                    )
+                );
+
+            }
+
             $privacy_msg = Storage::disk('public')->get('privacy_template/privacy.html');
 
             return view('payment.checkout', [
